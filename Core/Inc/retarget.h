@@ -10,6 +10,8 @@
 
 #include <stdio.h>
 #include <stdbool.h>
-#include <stm32f4xx_hal_uart.h>
+#include "stm32f4xx_hal.h"
+
+void retarget_init(UART_HandleTypeDef *huart);
 
 #endif /* INC_RETARGET_H_ */
