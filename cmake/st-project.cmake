@@ -73,6 +73,7 @@ target_link_options(
 target_sources(
     ${TARGET_NAME} PRIVATE
     "Core\\Src\\main.c"
+    "Core\\Src\\retarget.c"
     "Core\\Src\\stm32f4xx_hal_msp.c"
     "Core\\Src\\stm32f4xx_it.c"
     "Core\\Src\\syscalls.c"
