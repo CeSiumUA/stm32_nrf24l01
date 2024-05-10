@@ -6,7 +6,9 @@
 	],
 	"settings": {
 		"files.associations": {
-			"retarget.h": "c"
+			"retarget.h": "c",
+			"stm32f4xx_hal_def.h": "c",
+			"stm32f4xx_hal.h": "c"
 		}
 	}
 }
