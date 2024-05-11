@@ -9,6 +9,10 @@
 			"retarget.h": "c",
 			"stm32f4xx_hal_def.h": "c",
 			"stm32f4xx_hal.h": "c"
-		}
+		},
+		"cSpell.words": [
+			"GPIOB",
+			"hspi"
+		]
 	}
 }
