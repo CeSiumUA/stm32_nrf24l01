@@ -74,6 +74,7 @@ target_sources(
     ${TARGET_NAME} PRIVATE
     "Core\\Src\\main.c"
     "Core\\Src\\nrf24l01.c"
+    "Core\\Src\\radio.c"
     "Core\\Src\\retarget.c"
     "Core\\Src\\stm32f4xx_hal_msp.c"
     "Core\\Src\\stm32f4xx_it.c"
