@@ -38,9 +38,39 @@ typedef GPIO_TypeDef nrf24l01_gpio_t;
 
 /*Registers*/
 #define NRF24L01_REG_CONFIG                         (0x00)
+
+#define NRF2RL01_REG_CONFIG_MASK_PRIM_RX            (1 << 0)
+#define NRF2RL01_REG_CONFIG_MASK_PWR_UP             (1 << 1)
+#define NRF2RL01_REG_CONFIG_MASK_CRCO               (1 << 2)
+#define NRF2RL01_REG_CONFIG_MASK_EN_CRC             (1 << 3)
+#define NRF2RL01_REG_CONFIG_MASK_MASK_MAX_RT        (1 << 4)
+#define NRF2RL01_REG_CONFIG_MASK_MASK_TX_DS         (1 << 5)
+#define NRF2RL01_REG_CONFIG_MASK_MASK_RX_DR         (1 << 6)
+
 #define NRF24L01_REG_EN_AA                          (0x01)
+
+#define NRF24L01_REG_EN_AA_MASK_ENAA_P0             (1 << 0)
+#define NRF24L01_REG_EN_AA_MASK_ENAA_P1             (1 << 1)
+#define NRF24L01_REG_EN_AA_MASK_ENAA_P2             (1 << 2)
+#define NRF24L01_REG_EN_AA_MASK_ENAA_P3             (1 << 3)
+#define NRF24L01_REG_EN_AA_MASK_ENAA_P4             (1 << 4)
+#define NRF24L01_REG_EN_AA_MASK_ENAA_P5             (1 << 5)
+
 #define NRF24L01_REG_EN_RXADDR                      (0x02)
+
+#define NRF24L01_REG_EN_RXADDR_MASK_ERX_P0          (1 << 0)
+#define NRF24L01_REG_EN_RXADDR_MASK_ERX_P1          (1 << 1)
+#define NRF24L01_REG_EN_RXADDR_MASK_ERX_P2          (1 << 2)
+#define NRF24L01_REG_EN_RXADDR_MASK_ERX_P3          (1 << 3)
+#define NRF24L01_REG_EN_RXADDR_MASK_ERX_P4          (1 << 4)
+#define NRF24L01_REG_EN_RXADDR_MASK_ERX_P5          (1 << 5)
+
 #define NRF24L01_REG_SETUP_AW                       (0x03)
+
+#define NRF24L01_REG_SETUP_AW_MASK_3_BYTES          (0x01)
+#define NRF24L01_REG_SETUP_AW_MASK_4_BYTES          (0x02)
+#define NRF24L01_REG_SETUP_AW_MASK_5_BYTES          (0x03)
+
 #define NRF24L01_REG_SETUP_RETR                     (0x04)
 #define NRF24L01_REG_RF_CH                          (0x05)
 #define NRF24L01_REG_RF_SETUP                       (0x06)
@@ -68,6 +98,10 @@ struct nrf24l01_t {
     nrf24l01_spi_t *spi;
     nrf24l01_gpio_t *csn_port;
     uint16_t csn_pin;
+    nrf24l01_gpio_t *ce_port;
+    uint16_t ce_pin;
+    nrf24l01_gpio_t *irq_port;
+    uint16_t irq_pin;
 };
 
 #endif /* INC_NRF24L01_H_ */
