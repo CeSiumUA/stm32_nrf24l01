@@ -99,3 +99,99 @@ HAL_StatusTypeDef nrf24l01_pwr_up(struct nrf24l01_t *dev) {
     config |= (1 << 1);
     return nrf24l01_write_register(dev, NRF24L01_REG_CONFIG, &config, 1, NULL);
 }
+
+HAL_StatusTypeDef nrf24l01_set_ptx_mode(struct nrf24l01_t *dev) {
+    uint8_t config;
+    HAL_StatusTypeDef res;
+
+    res = nrf24l01_read_register(dev, NRF24L01_REG_CONFIG, &config, 1, NULL);
+    if (res != HAL_OK) {
+        return res;
+    }
+
+    config &= ~(1 << 0);
+    return nrf24l01_write_register(dev, NRF24L01_REG_CONFIG, &config, 1, NULL);
+}
+
+HAL_StatusTypeDef nrf24l01_set_prx_mode(struct nrf24l01_t *dev) {
+    uint8_t config;
+    HAL_StatusTypeDef res;
+
+    res = nrf24l01_read_register(dev, NRF24L01_REG_CONFIG, &config, 1, NULL);
+    if (res != HAL_OK) {
+        return res;
+    }
+
+    config |= (1 << 0);
+    return nrf24l01_write_register(dev, NRF24L01_REG_CONFIG, &config, 1, NULL);
+}
+
+HAL_StatusTypeDef nrf24l01_set_address_width(struct nrf24l01_t *dev, enum nrf24l01_address_width_t width) {
+    return nrf24l01_write_register(dev, NRF24L01_REG_SETUP_AW, &width, 1, NULL);
+}
+
+HAL_StatusTypeDef nrf24l01_set_auto_retransmit_delay(struct nrf24l01_t *dev, enum nrf24l01_auto_retransmit_delay_t delay) {
+    uint8_t setup_retr;
+    HAL_StatusTypeDef res;
+
+    res = nrf24l01_read_register(dev, NRF24L01_REG_SETUP_RETR, &setup_retr, 1, NULL);
+    if (res != HAL_OK) {
+        return res;
+    }
+
+    setup_retr &= 0xF;
+    setup_retr |= (delay << 4);
+
+    return nrf24l01_write_register(dev, NRF24L01_REG_SETUP_RETR, &setup_retr, 1, NULL);
+}
+
+HAL_StatusTypeDef nrf24l01_set_auto_retransmit_count(struct nrf24l01_t *dev, enum nrf24l01_auto_retransmit_count_t count) {
+    uint8_t setup_retr;
+    HAL_StatusTypeDef res;
+
+    res = nrf24l01_read_register(dev, NRF24L01_REG_SETUP_RETR, &setup_retr, 1, NULL);
+    if (res != HAL_OK) {
+        return res;
+    }
+
+    setup_retr &= 0xF0;
+    setup_retr |= count;
+
+    return nrf24l01_write_register(dev, NRF24L01_REG_SETUP_RETR, &setup_retr, 1, NULL);
+}
+
+HAL_StatusTypeDef nrf24l01_set_rf_channel(struct nrf24l01_t *dev, uint8_t channel) {
+    if (channel > 125) {
+        return HAL_ERROR;
+    }
+    return nrf24l01_write_register(dev, NRF24L01_REG_RF_CH, &channel, 1, NULL);
+}
+
+HAL_StatusTypeDef nrf24l01_set_air_data_rate(struct nrf24l01_t *dev, enum nrf24l01_air_data_rate_t rate) {
+    uint8_t rf_setup;
+    HAL_StatusTypeDef res;
+
+    res = nrf24l01_read_register(dev, NRF24L01_REG_RF_SETUP, &rf_setup, 1, NULL);
+    if (res != HAL_OK) {
+        return res;
+    }
+
+    rf_setup &= ~(1 << 3);
+    rf_setup |= rate;
+    return nrf24l01_write_register(dev, NRF24L01_REG_RF_SETUP, &rf_setup, 1, NULL);
+}
+
+HAL_StatusTypeDef nrf24l01_get_status(struct nrf24l01_t *dev, uint8_t *status) {
+    return nrf24l01_read_register(dev, NRF24L01_REG_STATUS, status, 1, NULL);
+}
+
+HAL_StatusTypeDef nrf24l01_set_tx_address(struct nrf24l01_t *dev, uint8_t *address, uint8_t len) {
+    return nrf24l01_write_register(dev, NRF24L01_REG_TX_ADDR, address, len, NULL);
+}
+
+HAL_StatusTypeDef nrf24l01_set_rx_pipe_data_width(struct nrf24l01_t *dev, uint8_t pipe, uint8_t width) {
+    if (pipe > 5 || width > 32) {
+        return HAL_ERROR;
+    }
+    return nrf24l01_write_register(dev, NRF24L01_REG_RX_PW_P0 + pipe, &width, 1, NULL);
+}
