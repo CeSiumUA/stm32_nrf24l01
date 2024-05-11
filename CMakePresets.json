@@ -56,10 +56,6 @@
         {
             "name": "minSizeRel",
             "configurePreset": "minSizeRel"
-        },
-        {
-            "name": "debug",
-            "configurePreset": "debug"
         }
     ]
 }
