@@ -51,7 +51,7 @@ HAL_StatusTypeDef nrf24l01_read_register(struct nrf24l01_t *dev, uint8_t reg, ui
     status_ptr = &status;
 
     if(status_out != NULL) {
-        status_ptr = &status_out;
+        status_ptr = status_out;
     }
 
     nrf24l01_csn_on(dev);
@@ -73,7 +73,7 @@ HAL_StatusTypeDef nrf24l01_write_register(struct nrf24l01_t *dev, uint8_t reg, u
     status_ptr = &status;
 
     if(status_out != NULL) {
-        status_ptr = &status_out;
+        status_ptr = status_out;
     }
 
     nrf24l01_csn_on(dev);
