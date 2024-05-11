@@ -39,7 +39,7 @@ void nrf24l01_ce_on(struct nrf24l01_t *dev) {
     HAL_GPIO_WritePin(dev->ce_port, dev->ce_pin, GPIO_PIN_SET);
 }
 
-static void nrf24l01_ce_off(struct nrf24l01_t *dev) {
+void nrf24l01_ce_off(struct nrf24l01_t *dev) {
     HAL_GPIO_WritePin(dev->ce_port, dev->ce_pin, GPIO_PIN_RESET);
 }
 
