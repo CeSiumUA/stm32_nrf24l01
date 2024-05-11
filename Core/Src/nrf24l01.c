@@ -35,7 +35,7 @@ static void nrf24l01_csn_off(struct nrf24l01_t *dev) {
     HAL_GPIO_WritePin(dev->csn_port, dev->csn_pin, GPIO_PIN_SET);
 }
 
-static void nrf24l01_ce_on(struct nrf24l01_t *dev) {
+void nrf24l01_ce_on(struct nrf24l01_t *dev) {
     HAL_GPIO_WritePin(dev->ce_port, dev->ce_pin, GPIO_PIN_SET);
 }
 
@@ -173,11 +173,13 @@ HAL_StatusTypeDef nrf24l01_set_auto_retransmit_count(struct nrf24l01_t *dev, enu
     return nrf24l01_write_register(dev, NRF24L01_REG_SETUP_RETR, &setup_retr, 1, NULL);
 }
 
-HAL_StatusTypeDef nrf24l01_set_rf_channel(struct nrf24l01_t *dev, uint8_t channel) {
-    if (channel > 125) {
+HAL_StatusTypeDef nrf24l01_set_rf_channel(struct nrf24l01_t *dev, int channel) {
+    uint8_t ch;
+    ch = (uint8_t)(channel - NRF24L01_BASE_FREQUENCY);
+    if (ch > 125) {
         return HAL_ERROR;
     }
-    return nrf24l01_write_register(dev, NRF24L01_REG_RF_CH, &channel, 1, NULL);
+    return nrf24l01_write_register(dev, NRF24L01_REG_RF_CH, &ch, 1, NULL);
 }
 
 HAL_StatusTypeDef nrf24l01_set_air_data_rate(struct nrf24l01_t *dev, enum nrf24l01_air_data_rate_t rate) {

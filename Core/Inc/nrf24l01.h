@@ -94,6 +94,8 @@ typedef GPIO_TypeDef nrf24l01_gpio_t;
 #define NRF24L01_REG_DYNPD                          (0x1C)
 #define NRF24L01_REG_FEATURE                        (0x1D)
 
+#define NRF24L01_BASE_FREQUENCY                     (2400)
+
 struct nrf24l01_t {
     nrf24l01_spi_t *spi;
     nrf24l01_gpio_t *csn_port;
@@ -159,6 +161,8 @@ void nrf24l01_init(struct nrf24l01_t *dev, SPI_HandleTypeDef *spi);
 void nrf24l01_set_csn(struct nrf24l01_t *dev, GPIO_TypeDef *port, uint16_t pin);
 void nrf24l01_set_ce(struct nrf24l01_t *dev, GPIO_TypeDef *port, uint16_t pin);
 void nrf24l01_set_irq(struct nrf24l01_t *dev, GPIO_TypeDef *port, uint16_t pin);
+void nrf24l01_ce_on(struct nrf24l01_t *dev);
+void nrf24l01_ce_off(struct nrf24l01_t *dev);
 HAL_StatusTypeDef nrf24l01_pwr_up(struct nrf24l01_t *dev);
 HAL_StatusTypeDef nrf24l01_pwr_down(struct nrf24l01_t *dev);
 HAL_StatusTypeDef nrf24l01_set_ptx_mode(struct nrf24l01_t *dev);
@@ -166,7 +170,7 @@ HAL_StatusTypeDef nrf24l01_set_prx_mode(struct nrf24l01_t *dev);
 HAL_StatusTypeDef nrf24l01_set_address_width(struct nrf24l01_t *dev, enum nrf24l01_address_width_t width);
 HAL_StatusTypeDef nrf24l01_set_auto_retransmit_delay(struct nrf24l01_t *dev, enum nrf24l01_auto_retransmit_delay_t delay);
 HAL_StatusTypeDef nrf24l01_set_auto_retransmit_count(struct nrf24l01_t *dev, enum nrf24l01_auto_retransmit_count_t count);
-HAL_StatusTypeDef nrf24l01_set_rf_channel(struct nrf24l01_t *dev, uint8_t channel);
+HAL_StatusTypeDef nrf24l01_set_rf_channel(struct nrf24l01_t *dev, int channel);
 HAL_StatusTypeDef nrf24l01_set_air_data_rate(struct nrf24l01_t *dev, enum nrf24l01_air_data_rate_t rate);
 HAL_StatusTypeDef nrf24l01_get_status(struct nrf24l01_t *dev, uint8_t *status);
 HAL_StatusTypeDef nrf24l01_get_status_nop(struct nrf24l01_t *dev, uint8_t *status);
