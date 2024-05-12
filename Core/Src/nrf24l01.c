@@ -27,11 +27,11 @@ void nrf24l01_set_irq(struct nrf24l01_t *dev, GPIO_TypeDef *port, uint16_t pin) 
     dev->irq_pin = pin;
 }
 
-static void nrf24l01_csn_on(struct nrf24l01_t *dev) {
+void nrf24l01_csn_on(struct nrf24l01_t *dev) {
     HAL_GPIO_WritePin(dev->csn_port, dev->csn_pin, GPIO_PIN_RESET);
 }
 
-static void nrf24l01_csn_off(struct nrf24l01_t *dev) {
+void nrf24l01_csn_off(struct nrf24l01_t *dev) {
     HAL_GPIO_WritePin(dev->csn_port, dev->csn_pin, GPIO_PIN_SET);
 }
 
@@ -43,7 +43,7 @@ void nrf24l01_ce_off(struct nrf24l01_t *dev) {
     HAL_GPIO_WritePin(dev->ce_port, dev->ce_pin, GPIO_PIN_RESET);
 }
 
-static HAL_StatusTypeDef nrf24l01_read_register(struct nrf24l01_t *dev, uint8_t reg, uint8_t *data, uint8_t len, uint8_t *status_out) {
+HAL_StatusTypeDef nrf24l01_read_register(struct nrf24l01_t *dev, uint8_t reg, uint8_t *data, uint8_t len, uint8_t *status_out) {
     HAL_StatusTypeDef res;
     uint8_t read_command = NRF24L01_CMD_R_REGISTER(reg);
     uint8_t status;
@@ -65,7 +65,7 @@ read_register_exit:
     return res;
 }
 
-static HAL_StatusTypeDef nrf24l01_write_register(struct nrf24l01_t *dev, uint8_t reg, uint8_t *data, uint8_t len, uint8_t *status_out) {
+HAL_StatusTypeDef nrf24l01_write_register(struct nrf24l01_t *dev, uint8_t reg, uint8_t *data, uint8_t len, uint8_t *status_out) {
     HAL_StatusTypeDef res;
     uint8_t write_command = NRF24L01_CMD_W_REGISTER(reg);
     uint8_t status;
@@ -219,4 +219,120 @@ HAL_StatusTypeDef nrf24l01_set_rx_pipe_data_width(struct nrf24l01_t *dev, uint8_
         return HAL_ERROR;
     }
     return nrf24l01_write_register(dev, NRF24L01_REG_RX_PW_P0 + pipe, &width, 1, NULL);
+}
+
+HAL_StatusTypeDef nrf24l01_read_rx_fifo(struct nrf24l01_t *dev, uint8_t *data, uint8_t len) {
+    uint8_t read_command = NRF24L01_CMD_R_RX_PAYLOAD;
+    uint8_t status;
+    HAL_StatusTypeDef res;
+
+    nrf24l01_csn_on(dev);
+    res = HAL_SPI_TransmitReceive(dev->spi, &read_command, &status, 1, 100);
+    if (res != HAL_OK) {
+        goto read_rx_fifo_exit;
+    }
+    res = HAL_SPI_Receive(dev->spi, data, len, 100);
+read_rx_fifo_exit:
+    nrf24l01_csn_off(dev);
+    return res;
+}
+
+HAL_StatusTypeDef nrf24l01_write_tx_fifo(struct nrf24l01_t *dev, uint8_t *data, uint8_t len) {
+    uint8_t write_command = NRF24L01_CMD_W_TX_PAYLOAD;
+    uint8_t status;
+    HAL_StatusTypeDef res;
+
+    nrf24l01_csn_on(dev);
+    res = HAL_SPI_TransmitReceive(dev->spi, &write_command, &status, 1, 100);
+    if (res != HAL_OK) {
+        goto write_tx_fifo_exit;
+    }
+    res = HAL_SPI_Transmit(dev->spi, data, len, 100);
+write_tx_fifo_exit:
+    nrf24l01_csn_off(dev);
+    return res;
+}
+
+HAL_StatusTypeDef nrf24l01_flush_tx_fifo(struct nrf24l01_t *dev) {
+    uint8_t flush_command = NRF24L01_CMD_FLUSH_TX;
+    uint8_t status;
+    HAL_StatusTypeDef res;
+
+    nrf24l01_csn_on(dev);
+    res = HAL_SPI_TransmitReceive(dev->spi, &flush_command, &status, 1, 100);
+    nrf24l01_csn_off(dev);
+    return res;
+}
+
+HAL_StatusTypeDef nrf24l01_flush_rx_fifo(struct nrf24l01_t *dev) {
+    uint8_t flush_command = NRF24L01_CMD_FLUSH_RX;
+    uint8_t status;
+    HAL_StatusTypeDef res;
+
+    nrf24l01_csn_on(dev);
+    res = HAL_SPI_TransmitReceive(dev->spi, &flush_command, &status, 1, 100);
+    nrf24l01_csn_off(dev);
+    return res;
+}
+
+HAL_StatusTypeDef nrf24l01_get_fifo_status(struct nrf24l01_t *dev, uint8_t *status) {
+    return nrf24l01_read_register(dev, NRF24L01_REG_FIFO_STATUS, status, 1, NULL);
+}
+
+HAL_StatusTypeDef nrf24l01_reset(struct nrf24l01_t *dev) {
+    uint8_t config;
+    HAL_StatusTypeDef res;
+
+    nrf24l01_csn_off(dev);
+    nrf24l01_ce_off(dev);
+
+    config = NRF24L01_REG_CONFIG_RESET_VALUE;
+    res = nrf24l01_write_register(dev, NRF24L01_REG_CONFIG, &config, 1, NULL);
+    if (res != HAL_OK) {
+        return res;
+    }
+
+    config = NRF24L01_REG_EN_AA_RESET_VALUE;
+    res = nrf24l01_write_register(dev, NRF24L01_REG_EN_AA, &config, 1, NULL);
+    if (res != HAL_OK) {
+        return res;
+    }
+
+    config = NRF24L01_REG_EN_RXADDR_RESET_VALUE;
+    res = nrf24l01_write_register(dev, NRF24L01_REG_EN_RXADDR, &config, 1, NULL);
+    if (res != HAL_OK) {
+        return res;
+    }
+
+    config = NRF24L01_REG_SETUP_AW_RESET_VALUE;
+    res = nrf24l01_write_register(dev, NRF24L01_REG_SETUP_AW, &config, 1, NULL);
+    if (res != HAL_OK) {
+        return res;
+    }
+
+    config = NRF24L01_REG_SETUP_RETR_RESET_VALUE;
+    res = nrf24l01_write_register(dev, NRF24L01_REG_SETUP_RETR, &config, 1, NULL);
+    if (res != HAL_OK) {
+        return res;
+    }
+
+    config = NRF24L01_REG_RF_CH_RESET_VALUE;
+    res = nrf24l01_write_register(dev, NRF24L01_REG_RF_CH, &config, 1, NULL);
+    if (res != HAL_OK) {
+        return res;
+    }
+
+    config = NRF24L01_REG_RF_SETUP_RESET_VALUE;
+    res = nrf24l01_write_register(dev, NRF24L01_REG_RF_SETUP, &config, 1, NULL);
+    if (res != HAL_OK) {
+        return res;
+    }
+
+    config = NRF24L01_REG_STATUS_RESET_VALUE;
+    res = nrf24l01_write_register(dev, NRF24L01_REG_STATUS, &config, 1, NULL);
+    if (res != HAL_OK) {
+        return res;
+    }
+
+    return res;
 }

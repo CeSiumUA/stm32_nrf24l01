@@ -38,6 +38,7 @@ typedef GPIO_TypeDef nrf24l01_gpio_t;
 
 /*Registers*/
 #define NRF24L01_REG_CONFIG                         (0x00)
+#define NRF24L01_REG_CONFIG_RESET_VALUE             (0b00001000)
 
 #define NRF2RL01_REG_CONFIG_MASK_PRIM_RX            (1 << 0)
 #define NRF2RL01_REG_CONFIG_MASK_PWR_UP             (1 << 1)
@@ -48,6 +49,7 @@ typedef GPIO_TypeDef nrf24l01_gpio_t;
 #define NRF2RL01_REG_CONFIG_MASK_MASK_RX_DR         (1 << 6)
 
 #define NRF24L01_REG_EN_AA                          (0x01)
+#define NRF24L01_REG_EN_AA_RESET_VALUE              (0b00111111)
 
 #define NRF24L01_REG_EN_AA_MASK_ENAA_P0             (1 << 0)
 #define NRF24L01_REG_EN_AA_MASK_ENAA_P1             (1 << 1)
@@ -57,6 +59,7 @@ typedef GPIO_TypeDef nrf24l01_gpio_t;
 #define NRF24L01_REG_EN_AA_MASK_ENAA_P5             (1 << 5)
 
 #define NRF24L01_REG_EN_RXADDR                      (0x02)
+#define NRF24L01_REG_EN_RXADDR_RESET_VALUE          (0b00000011)
 
 #define NRF24L01_REG_EN_RXADDR_MASK_ERX_P0          (1 << 0)
 #define NRF24L01_REG_EN_RXADDR_MASK_ERX_P1          (1 << 1)
@@ -66,16 +69,27 @@ typedef GPIO_TypeDef nrf24l01_gpio_t;
 #define NRF24L01_REG_EN_RXADDR_MASK_ERX_P5          (1 << 5)
 
 #define NRF24L01_REG_SETUP_AW                       (0x03)
+#define NRF24L01_REG_SETUP_AW_RESET_VALUE           (0b00000011)
 
 #define NRF24L01_REG_SETUP_AW_MASK_3_BYTES          (0x01)
 #define NRF24L01_REG_SETUP_AW_MASK_4_BYTES          (0x02)
 #define NRF24L01_REG_SETUP_AW_MASK_5_BYTES          (0x03)
 
 #define NRF24L01_REG_SETUP_RETR                     (0x04)
+#define NRF24L01_REG_SETUP_RETR_RESET_VALUE         (0b00000011)
+
 #define NRF24L01_REG_RF_CH                          (0x05)
+#define NRF24L01_REG_RF_CH_RESET_VALUE              (0b00000010)
+
 #define NRF24L01_REG_RF_SETUP                       (0x06)
+#define NRF24L01_REG_RF_SETUP_RESET_VALUE           (0b00001111)
+
 #define NRF24L01_REG_STATUS                         (0x07)
+#define NRF24L01_REG_STATUS_RESET_VALUE             (0b01111110)
+
 #define NRF24L01_REG_OBSERVE_TX                     (0x08)
+#define NRF24L01_REG_OBSERVE_TX_RESET_VALUE         (0b00000000)
+
 #define NRF24L01_REG_CD                             (0x09)
 #define NRF24L01_REG_RX_ADDR_P0                     (0x0A)
 #define NRF24L01_REG_RX_ADDR_P1                     (0x0B)
@@ -90,9 +104,14 @@ typedef GPIO_TypeDef nrf24l01_gpio_t;
 #define NRF24L01_REG_RX_PW_P3                       (0x14)
 #define NRF24L01_REG_RX_PW_P4                       (0x15)
 #define NRF24L01_REG_RX_PW_P5                       (0x16)
+#define NRF24L01_REG_RX_PW_RESET_VALUE              (0b00000000)
+
 #define NRF24L01_REG_FIFO_STATUS                    (0x17)
 #define NRF24L01_REG_DYNPD                          (0x1C)
+#define NRF24L01_REG_DYNPD_RESET_VALUE              (0b00000000)
+
 #define NRF24L01_REG_FEATURE                        (0x1D)
+#define NRF24L01_REG_FEATURE_RESET_VALUE            (0b00000000)
 
 #define NRF24L01_BASE_FREQUENCY                     (2400)
 
@@ -163,6 +182,8 @@ void nrf24l01_set_ce(struct nrf24l01_t *dev, GPIO_TypeDef *port, uint16_t pin);
 void nrf24l01_set_irq(struct nrf24l01_t *dev, GPIO_TypeDef *port, uint16_t pin);
 void nrf24l01_ce_on(struct nrf24l01_t *dev);
 void nrf24l01_ce_off(struct nrf24l01_t *dev);
+void nrf24l01_csn_on(struct nrf24l01_t *dev);
+void nrf24l01_csn_off(struct nrf24l01_t *dev);
 HAL_StatusTypeDef nrf24l01_pwr_up(struct nrf24l01_t *dev);
 HAL_StatusTypeDef nrf24l01_pwr_down(struct nrf24l01_t *dev);
 HAL_StatusTypeDef nrf24l01_set_ptx_mode(struct nrf24l01_t *dev);
@@ -176,5 +197,13 @@ HAL_StatusTypeDef nrf24l01_get_status(struct nrf24l01_t *dev, uint8_t *status);
 HAL_StatusTypeDef nrf24l01_get_status_nop(struct nrf24l01_t *dev, uint8_t *status);
 HAL_StatusTypeDef nrf24l01_set_tx_address(struct nrf24l01_t *dev, uint8_t *address, uint8_t len);
 HAL_StatusTypeDef nrf24l01_set_rx_pipe_data_width(struct nrf24l01_t *dev, uint8_t pipe, uint8_t width);
+HAL_StatusTypeDef nrf24l01_read_rx_fifo(struct nrf24l01_t *dev, uint8_t *data, uint8_t len);
+HAL_StatusTypeDef nrf24l01_write_tx_fifo(struct nrf24l01_t *dev, uint8_t *data, uint8_t len);
+HAL_StatusTypeDef nrf24l01_flush_tx_fifo(struct nrf24l01_t *dev);
+HAL_StatusTypeDef nrf24l01_flush_rx_fifo(struct nrf24l01_t *dev);
+HAL_StatusTypeDef nrf24l01_get_fifo_status(struct nrf24l01_t *dev, uint8_t *status);
+HAL_StatusTypeDef nrf24l01_reset(struct nrf24l01_t *dev);
+HAL_StatusTypeDef nrf24l01_read_register(struct nrf24l01_t *dev, uint8_t reg, uint8_t *data, uint8_t len, uint8_t *status_out);
+HAL_StatusTypeDef nrf24l01_write_register(struct nrf24l01_t *dev, uint8_t reg, uint8_t *data, uint8_t len, uint8_t *status_out);
 
 #endif /* INC_NRF24L01_H_ */
