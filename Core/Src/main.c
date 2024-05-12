@@ -109,22 +109,16 @@ int main(void)
   char tx_data[] = "abcdefghijklmnopqrstuvwxyz";
   char rx_data[27] = {0};
   
-
-  printf("radio 1 state: %d, radio 2 state: %d\n", radio_1_irq_flag, radio_2_irq_flag);
   printf("sending data (%s)...\n", tx_data);
   radio_send(&radio_2, (uint8_t *)tx_data, sizeof(tx_data));
-  printf("radio 1 state: %d, radio 2 state: %d\n", radio_1_irq_flag, radio_2_irq_flag);
-  HAL_Delay(1000);
-  printf("radio 1 state: %d, radio 2 state: %d\n", radio_1_irq_flag, radio_2_irq_flag);
-  printf("tx status: \n");
-  radio_print_status(&radio_2);
-  printf("rx status: \n");
-  radio_print_status(&radio_1);
-  printf("rx configs:\n");
-  radio_print_config(&radio_1);
-  printf("receiving data...\n");
+  
+  while (radio_1_irq_flag == false)
+  {
+    printf("waiting for radio 1 interrupt...\n");
+    HAL_Delay(100);
+  }
+
   radio_receive(&radio_1, (uint8_t *)rx_data, sizeof(rx_data));
-  printf("radio 1 state: %d, radio 2 state: %d\n", radio_1_irq_flag, radio_2_irq_flag);
   printf("Received: %s\n", rx_data);
   memset(rx_data, 0, sizeof(rx_data));
   HAL_Delay(1000);
