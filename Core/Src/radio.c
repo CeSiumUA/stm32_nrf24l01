@@ -10,11 +10,17 @@
 
 
 void radio_init(SPI_HandleTypeDef *hspi, struct nrf24l01_t *radio_1, struct nrf24l01_t *radio_2) {
+    if(radio_1 == NULL) {
+        return;
+    }
     nrf24l01_init(radio_1, hspi);
     nrf24l01_set_csn(radio_1, RADIO_1_CSN_GPIO_Port, RADIO_1_CSN_Pin);
     nrf24l01_set_ce(radio_1, RADIO_1_CE_GPIO_Port, RADIO_1_CE_Pin);
     nrf24l01_set_irq(radio_1, RADIO_1_IRQ_GPIO_Port, RADIO_1_IRQ_Pin);
 
+    if(radio_2 == NULL) {
+        return;
+    }
     nrf24l01_init(radio_2, hspi);
     nrf24l01_set_csn(radio_2, RADIO_2_CSN_GPIO_Port, RADIO_2_CSN_Pin);
     nrf24l01_set_ce(radio_2, RADIO_2_CE_GPIO_Port, RADIO_2_CE_Pin);
@@ -58,7 +64,7 @@ void radio_set_rx_mode(struct nrf24l01_t *radio) {
     if(res != HAL_OK) {
         printf("Failed to set air data rate\n");
     }
-    res = nrf24l01_set_rx_pipe_data_width(radio, 0, 27);
+    res = nrf24l01_set_rx_pipe_data_width(radio, 0, 32);
     if(res != HAL_OK) {
         printf("Failed to set RX pipe data width\n");
     }
@@ -165,6 +171,7 @@ void radio_print_config(struct nrf24l01_t *radio) {
     }
 
     printf("CONFIG: 0x%02X\n", config);
+    HAL_Delay(500);
 
     res = nrf24l01_read_register(radio, NRF24L01_REG_EN_AA, &config, 1, NULL);
     if(res != HAL_OK) {
@@ -172,6 +179,7 @@ void radio_print_config(struct nrf24l01_t *radio) {
     }
 
     printf("EN_AA: 0x%02X\n", config);
+    HAL_Delay(500);
 
     res = nrf24l01_read_register(radio, NRF24L01_REG_EN_RXADDR, &config, 1, NULL);
     if(res != HAL_OK) {
@@ -179,6 +187,7 @@ void radio_print_config(struct nrf24l01_t *radio) {
     }
 
     printf("EN_RXADDR: 0x%02X\n", config);
+    HAL_Delay(500);
 
     res = nrf24l01_read_register(radio, NRF24L01_REG_SETUP_AW, &config, 1, NULL);
     if(res != HAL_OK) {
@@ -186,6 +195,7 @@ void radio_print_config(struct nrf24l01_t *radio) {
     }
 
     printf("SETUP_AW: 0x%02X\n", config);
+    HAL_Delay(500);
 
     res = nrf24l01_read_register(radio, NRF24L01_REG_SETUP_RETR, &config, 1, NULL);
     if(res != HAL_OK) {
@@ -193,6 +203,7 @@ void radio_print_config(struct nrf24l01_t *radio) {
     }
 
     printf("SETUP_RETR: 0x%02X\n", config);
+    HAL_Delay(500);
 
     res = nrf24l01_read_register(radio, NRF24L01_REG_RF_CH, &config, 1, NULL);
     if(res != HAL_OK) {
@@ -200,6 +211,7 @@ void radio_print_config(struct nrf24l01_t *radio) {
     }
 
     printf("RF_CH: 0x%02X\n", config);
+    HAL_Delay(500);
 
     res = nrf24l01_read_register(radio, NRF24L01_REG_RF_SETUP, &config, 1, NULL);
     if(res != HAL_OK) {
@@ -207,11 +219,88 @@ void radio_print_config(struct nrf24l01_t *radio) {
     }
 
     printf("RF_SETUP: 0x%02X\n", config);
+    HAL_Delay(500);
 
     res = nrf24l01_read_register(radio, NRF24L01_REG_STATUS, &config, 1, NULL);
     if(res != HAL_OK) {
         printf("Failed to read STATUS register\n");
     }
+
+    printf("STATUS: 0x%02X\n", config);
+    HAL_Delay(500);
+
+    res = nrf24l01_read_register(radio, NRF24L01_REG_OBSERVE_TX, &config, 1, NULL);
+    if(res != HAL_OK) {
+        printf("Failed to read OBSERVE_TX register\n");
+    }
+
+    printf("OBSERVE_TX: 0x%02X\n", config);
+    HAL_Delay(500);
+
+    res = nrf24l01_read_register(radio, NRF24L01_REG_CD, &config, 1, NULL);
+    if(res != HAL_OK) {
+        printf("Failed to read CD register\n");
+    }
+
+    printf("CD: 0x%02X\n", config);
+    HAL_Delay(500);
+
+    // uint8_t addr[5] = {0};
+    // res = nrf24l01_get_rx_p0_address(radio, addr);
+    // if(res != HAL_OK) {
+    //     printf("Failed to get RX P0 address\n");
+    // }
+
+    // printf("RX P0 address: ");
+    // for(int i = 0; i < 5; i++) {
+    //     printf("0x%02X ", addr[i]);
+    // }
+    // printf("\n");
+    // HAL_Delay(3000);
+
+    // res = nrf24l01_read_register(radio, NRF24L01_REG_TX_ADDR, addr, 5, NULL);
+    // if(res != HAL_OK) {
+    //     printf("Failed to read TX_ADDR register\n");
+    // }
+
+    // printf("TX_ADDR: ");
+    // for(int i = 0; i < 5; i++) {
+    //     printf("0x%02X ", addr[i]);
+    // }
+    // printf("\n");
+    // HAL_Delay(3000);
+
+    // res = nrf24l01_read_register(radio, NRF24L01_REG_RX_PW_P0, &config, 1, NULL);
+    // if(res != HAL_OK) {
+    //     printf("Failed to read RX_PW_P0 register\n");
+    // }
+
+    // printf("RX_PW_P0: 0x%02X\n", config);
+    // HAL_Delay(3000);
+
+    // res = nrf24l01_read_register(radio, NRF24L01_REG_FIFO_STATUS, &config, 1, NULL);
+    // if(res != HAL_OK) {
+    //     printf("Failed to read FIFO_STATUS register\n");
+    // }
+
+    // printf("FIFO_STATUS: 0x%02X\n", config);
+    // HAL_Delay(3000);
+
+    // res = nrf24l01_read_register(radio, NRF24L01_REG_DYNPD, &config, 1, NULL);
+    // if(res != HAL_OK) {
+    //     printf("Failed to read DYNPD register\n");
+    // }
+
+    // printf("DYNPD: 0x%02X\n", config);
+    // HAL_Delay(3000);
+
+    // res = nrf24l01_read_register(radio, NRF24L01_REG_FEATURE, &config, 1, NULL);
+    // if(res != HAL_OK) {
+    //     printf("Failed to read FEATURE register\n");
+    // }
+
+    // printf("FEATURE: 0x%02X\n", config);
+    // HAL_Delay(3000);
 }
 
 void radio_shut_down(struct nrf24l01_t *radio) {

@@ -205,5 +205,11 @@ HAL_StatusTypeDef nrf24l01_get_fifo_status(struct nrf24l01_t *dev, uint8_t *stat
 HAL_StatusTypeDef nrf24l01_reset(struct nrf24l01_t *dev);
 HAL_StatusTypeDef nrf24l01_read_register(struct nrf24l01_t *dev, uint8_t reg, uint8_t *data, uint8_t len, uint8_t *status_out);
 HAL_StatusTypeDef nrf24l01_write_register(struct nrf24l01_t *dev, uint8_t reg, uint8_t *data, uint8_t len, uint8_t *status_out);
+HAL_StatusTypeDef nrf24l01_get_rx_p0_address(struct nrf24l01_t *dev, uint8_t *address);
+HAL_StatusTypeDef nrf24l01_get_rx_p1_address(struct nrf24l01_t *dev, uint8_t *address);
+HAL_StatusTypeDef nrf24l01_get_rx_p2_address(struct nrf24l01_t *dev, uint8_t *address);
+HAL_StatusTypeDef nrf24l01_get_rx_p3_address(struct nrf24l01_t *dev, uint8_t *address);
+HAL_StatusTypeDef nrf24l01_get_rx_p4_address(struct nrf24l01_t *dev, uint8_t *address);
+HAL_StatusTypeDef nrf24l01_get_rx_p5_address(struct nrf24l01_t *dev, uint8_t *address);
 
 #endif /* INC_NRF24L01_H_ */

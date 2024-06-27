@@ -33,6 +33,7 @@ extern "C" {
 /* USER CODE BEGIN Includes */
 #include "retarget.h"
 #include "radio.h"
+#include <inttypes.h>
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/

@@ -192,7 +192,7 @@ HAL_StatusTypeDef nrf24l01_set_air_data_rate(struct nrf24l01_t *dev, enum nrf24l
     }
 
     rf_setup &= ~(1 << 3);
-    rf_setup |= rate;
+    rf_setup |= (rate << 3);
     return nrf24l01_write_register(dev, NRF24L01_REG_RF_SETUP, &rf_setup, 1, NULL);
 }
 
@@ -212,6 +212,30 @@ HAL_StatusTypeDef nrf24l01_get_status_nop(struct nrf24l01_t *dev, uint8_t *statu
 
 HAL_StatusTypeDef nrf24l01_set_tx_address(struct nrf24l01_t *dev, uint8_t *address, uint8_t len) {
     return nrf24l01_write_register(dev, NRF24L01_REG_TX_ADDR, address, len, NULL);
+}
+
+HAL_StatusTypeDef nrf24l01_get_rx_p0_address(struct nrf24l01_t *dev, uint8_t *address) {
+    return nrf24l01_read_register(dev, NRF24L01_REG_RX_ADDR_P0, address, 5, NULL);
+}
+
+HAL_StatusTypeDef nrf24l01_get_rx_p1_address(struct nrf24l01_t *dev, uint8_t *address){
+    return nrf24l01_read_register(dev, NRF24L01_REG_RX_ADDR_P1, (uint8_t *)address, 5, NULL);
+}
+
+HAL_StatusTypeDef nrf24l01_get_rx_p2_address(struct nrf24l01_t *dev, uint8_t *address){
+    return nrf24l01_read_register(dev, NRF24L01_REG_RX_ADDR_P2, (uint8_t *)address, 5, NULL);
+}
+
+HAL_StatusTypeDef nrf24l01_get_rx_p3_address(struct nrf24l01_t *dev, uint8_t *address){
+    return nrf24l01_read_register(dev, NRF24L01_REG_RX_ADDR_P3, (uint8_t *)address, 5, NULL);
+}
+
+HAL_StatusTypeDef nrf24l01_get_rx_p4_address(struct nrf24l01_t *dev, uint8_t *address){
+    return nrf24l01_read_register(dev, NRF24L01_REG_RX_ADDR_P4, (uint8_t *)address, 5, NULL);
+}
+
+HAL_StatusTypeDef nrf24l01_get_rx_p5_address(struct nrf24l01_t *dev, uint8_t *address){
+    return nrf24l01_read_register(dev, NRF24L01_REG_RX_ADDR_P5, (uint8_t *)address, 5, NULL);
 }
 
 HAL_StatusTypeDef nrf24l01_set_rx_pipe_data_width(struct nrf24l01_t *dev, uint8_t pipe, uint8_t width) {

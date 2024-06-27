@@ -46,7 +46,7 @@ UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
 struct nrf24l01_t radio_1;
-struct nrf24l01_t radio_2;
+// struct nrf24l01_t radio_2;
 
 bool radio_1_irq_flag = false;
 bool radio_2_irq_flag = false;
@@ -98,28 +98,42 @@ int main(void)
   MX_USART2_UART_Init();
   MX_SPI2_Init();
   /* USER CODE BEGIN 2 */
+  HAL_Delay(1000);
   retarget_init(&huart2);
-  radio_init(&hspi2, &radio_1, &radio_2);
+  radio_init(&hspi2, &radio_1, NULL);
   radio_shut_down(&radio_1);
   HAL_Delay(500);
-  radio_shut_down(&radio_2);
-  HAL_Delay(1000);
+  // radio_shut_down(&radio_2);
+  HAL_Delay(3000);
   radio_set_rx_mode(&radio_1);
-  radio_set_tx_mode(&radio_2);
+  // radio_set_tx_mode(&radio_2);
   char tx_data[] = "abcdefghijklmnopqrstuvwxyz";
-  char rx_data[27] = {0};
+  char rx_data[32] = {0};
   
-  printf("sending data (%s)...\n", tx_data);
-  radio_send(&radio_2, (uint8_t *)tx_data, sizeof(tx_data));
+  // printf("sending data (%s)...\n", tx_data);
+  // radio_send(&radio_2, (uint8_t *)tx_data, sizeof(tx_data));
   
+  printf("waiting for radio 1 interrupt...\n");
+
+  int cntr = 0;
+
   while (radio_1_irq_flag == false)
   {
-    printf("waiting for radio 1 interrupt...\n");
+    // printf("waiting for radio 1 interrupt...\n");
+    if(cntr % 300 == 0){
+      printf("status %d:\n", cntr);
+      radio_print_config(&radio_1);
+    }
     HAL_Delay(100);
+    cntr++;
   }
 
   radio_receive(&radio_1, (uint8_t *)rx_data, sizeof(rx_data));
   printf("Received: %s\n", rx_data);
+  while(true){
+    printf("Receive FINISHED!!!!\n");
+    HAL_Delay(1000);
+  }
   memset(rx_data, 0, sizeof(rx_data));
   HAL_Delay(1000);
 
