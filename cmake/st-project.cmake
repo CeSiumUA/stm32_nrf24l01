@@ -92,6 +92,7 @@ target_sources(
     "Drivers\\STM32F4xx_HAL_Driver\\Src\\stm32f4xx_hal_pwr.c"
     "Drivers\\STM32F4xx_HAL_Driver\\Src\\stm32f4xx_hal_rcc_ex.c"
     "Drivers\\STM32F4xx_HAL_Driver\\Src\\stm32f4xx_hal_rcc.c"
+    "Drivers\\STM32F4xx_HAL_Driver\\Src\\stm32f4xx_hal_spi.c"
     "Drivers\\STM32F4xx_HAL_Driver\\Src\\stm32f4xx_hal_tim_ex.c"
     "Drivers\\STM32F4xx_HAL_Driver\\Src\\stm32f4xx_hal_tim.c"
     "Drivers\\STM32F4xx_HAL_Driver\\Src\\stm32f4xx_hal_uart.c"
