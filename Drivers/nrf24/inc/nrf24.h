@@ -48,13 +48,13 @@ typedef struct nrf24_gpio_pin_t {
 #define NRF24_REG_CONFIG                         (0x00)
 #define NRF24_REG_CONFIG_RESET_VALUE             (0b00001000)
 
-#define NRF2RL01_REG_CONFIG_MASK_PRIM_RX            (1 << 0)
-#define NRF2RL01_REG_CONFIG_MASK_PWR_UP             (1 << 1)
-#define NRF2RL01_REG_CONFIG_MASK_CRCO               (1 << 2)
-#define NRF2RL01_REG_CONFIG_MASK_EN_CRC             (1 << 3)
-#define NRF2RL01_REG_CONFIG_MASK_MASK_MAX_RT        (1 << 4)
-#define NRF2RL01_REG_CONFIG_MASK_MASK_TX_DS         (1 << 5)
-#define NRF2RL01_REG_CONFIG_MASK_MASK_RX_DR         (1 << 6)
+#define NRF2RL01_REG_CONFIG_MASK_PRIM_RX         (1 << 0)
+#define NRF2RL01_REG_CONFIG_MASK_PWR_UP          (1 << 1)
+#define NRF2RL01_REG_CONFIG_MASK_CRCO            (1 << 2)
+#define NRF2RL01_REG_CONFIG_MASK_EN_CRC          (1 << 3)
+#define NRF2RL01_REG_CONFIG_MASK_MASK_MAX_RT     (1 << 4)
+#define NRF2RL01_REG_CONFIG_MASK_MASK_TX_DS      (1 << 5)
+#define NRF2RL01_REG_CONFIG_MASK_MASK_RX_DR      (1 << 6)
 
 #define NRF24_REG_EN_AA                          (0x01)
 #define NRF24_REG_EN_AA_RESET_VALUE              (0b00111111)
@@ -202,5 +202,42 @@ enum nrf24_tx_power_t {
     NRF24_TXP_ATTENUATION_6_DBM,
     NRF24_TXP_0_DBM
 };
+
+void nrf24_ce_on(struct nrf24_t *nrf24);
+void nrf24_ce_off(struct nrf24_t *nrf24);
+nrf24_hal_status_t nrf24_read_register(struct nrf24_t *nrf24, uint8_t reg, uint8_t *data, size_t len);
+nrf24_hal_status_t nrf24_write_register(struct nrf24_t *nrf24, uint8_t reg, uint8_t *data, size_t len);
+nrf24_hal_status_t nrf24_power_up(struct nrf24_t *nrf24);
+nrf24_hal_status_t nrf24_power_down(struct nrf24_t *nrf24);
+nrf24_hal_status_t nrf24_set_prx_mode(struct nrf24_t *nrf24);
+nrf24_hal_status_t nrf24_set_ptx_mode(struct nrf24_t *nrf24);
+nrf24_hal_status_t nrf24_set_crc_mode(struct nrf24_t *nrf24, nrf24_crc_mode_t crc_mode);
+nrf24_hal_status_t nrf24_set_auto_ack(struct nrf24_t *nrf24, uint8_t pipe, bool enable);
+nrf24_hal_status_t nrf24_set_rx_pipe(struct nrf24_t *nrf24, uint8_t pipe, bool enable);
+nrf24_hal_status_t nrf24_set_address_width(struct nrf24_t *nrf24, nrf24_address_width_t addr_width);
+nrf24_hal_status_t nrf24_setup_retransmission(struct nrf24_t *nrf24, nrf24_auto_retransmit_delay_t delay, nrf24_auto_retransmit_count_t count);
+nrf24_hal_status_t nrf24_set_radio_output_power(struct nrf24_t *nrf24, nrf24_tx_power_t power);
+nrf24_hal_status_t nrf24_set_radio_channel(struct nrf24_t *nrf24, uint8_t channel);
+nrf24_hal_status_t nrf24_set_radio_data_rate(struct nrf24_t *nrf24, nrf24_air_data_rate_t data_rate);
+nrf24_hal_status_t nrf24_get_status(struct nrf24_t *nrf24, uint8_t *status);
+nrf24_hal_status_t nrf24_get_observe_tx(struct nrf24_t *nrf24, uint8_t *observe_tx);
+nrf24_hal_status_t nrf24_get_carrier_detect(struct nrf24_t *nrf24, uint8_t *cd);
+nrf24_hal_status_t nrf24_set_major_pipe_address(struct nrf24_t *nrf24, uint8_t pipe, uint8_t *address);
+nrf24_hal_status_t nrf24_set_minor_pipe_address(struct nrf24_t *nrf24, uint8_t pipe, uint8_t *address);
+nrf24_hal_status_t nrf24_get_major_pipe_address(struct nrf24_t *nrf24, uint8_t pipe, uint8_t *address);
+nrf24_hal_status_t nrf24_get_minor_pipe_address(struct nrf24_t *nrf24, uint8_t pipe, uint8_t *address);
+nrf24_hal_status_t nrf24_set_tx_address(struct nrf24_t *nrf24, uint8_t *address);
+nrf24_hal_status_t nrf24_set_rx_payload_width(struct nrf24_t *nrf24, uint8_t pipe, uint8_t width);
+nrf24_hal_status_t nrf24_get_rx_payload_width(struct nrf24_t *nrf24, uint8_t pipe, uint8_t *width);
+nrf24_hal_status_t nrf24_get_fifo_status(struct nrf24_t *nrf24, uint8_t *fifo_status);
+nrf24_hal_status_t nrf24_get_dynpd(struct nrf24_t *nrf24, uint8_t *dynpd);
+nrf24_hal_status_t nrf24_set_dynpd(struct nrf24_t *nrf24, uint8_t pipe, bool enable);
+nrf24_hal_status_t nrf24_get_feature(struct nrf24_t *nrf24, uint8_t *feature);
+nrf24_hal_status_t nrf24_set_feature(struct nrf24_t *nrf24, uint8_t feature);
+nrf24_hal_status_t nrf24_soft_reset(struct nrf24_t *nrf24);
+nrf24_hal_status_t nrf24_write_tx_fifo(struct nrf24_t *nrf24, uint8_t *data, size_t len);
+nrf24_hal_status_t nrf24_read_rx_fifo(struct nrf24_t *nrf24, uint8_t *data, size_t len);
+nrf24_hal_status_t nrf24_flush_tx_fifo(struct nrf24_t *nrf24);
+nrf24_hal_status_t nrf24_flush_rx_fifo(struct nrf24_t *nrf24);
 
 #endif /* NRF24_INC_NRF24_H_ */

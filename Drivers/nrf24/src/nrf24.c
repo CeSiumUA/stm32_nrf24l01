@@ -437,6 +437,18 @@ nrf24_hal_status_t nrf24_soft_reset(struct nrf24_t *nrf24) {
         return status;
     }
 
+    status = nrf24_flush_tx_fifo(nrf24);
+    if (status != HAL_OK) {
+        return status;
+    }
+
+    status = nrf24_flush_rx_fifo(nrf24);
+    if (status != HAL_OK) {
+        return status;
+    }
+
+    nrf24_ce_off(nrf24);
+
     return HAL_OK;
 }
 
@@ -480,4 +492,30 @@ read_rx_fifo_exit:
 #endif
 }
 
-// TODO: Flush RX and TX FIFOs
+nrf24_hal_status_t nrf24_flush_tx_fifo(struct nrf24_t *nrf24) {
+    nrf24_hal_status_t status;
+    uint8_t cmd = NRF24_CMD_FLUSH_TX;
+
+#ifndef __KERNEL__
+    nrf24_csn_on(nrf24);
+    status = HAL_SPI_Transmit(nrf24->spi, &cmd, 1, 100);
+    nrf24_csn_off(nrf24);
+
+    return status;
+#else
+#endif
+}
+
+nrf24_hal_status_t nrf24_flush_rx_fifo(struct nrf24_t *nrf24) {
+    nrf24_hal_status_t status;
+    uint8_t cmd = NRF24_CMD_FLUSH_RX;
+
+#ifndef __KERNEL__
+    nrf24_csn_on(nrf24);
+    status = HAL_SPI_Transmit(nrf24->spi, &cmd, 1, 100);
+    nrf24_csn_off(nrf24);
+
+    return status;
+#else
+#endif
+}
