@@ -7,7 +7,7 @@ mkdir -p ${BUILD_DIR}
 
 if [ "$(uname)" != "MINGW"* ] && [ "$(uname)" != "CYGWIN"* ] && [ "$(uname)" != "MSYS"* ]; then
   # Use sed to replace '\\' with '/' in the file cmake/st-project.cmake
-  sed -i 's#\\#/#g' cmake/st-project.cmake
+  sed -i 's#\\\\#/#g' cmake/st-project.cmake
 fi
 
 echo "Generating build files..."
