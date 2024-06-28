@@ -32,6 +32,8 @@ jobs:
     runs-on: self-hosted
     name: Build project with CMake
     steps:
+    - uses: actions/checkout@v4
+
     - name: Set execution rights
       run: |
         chmod +x build.sh
