@@ -29,6 +29,11 @@ jobs:
         project-target: 'stm32_nrf24l01'
   
   cmake-build:
+
+    strategy:
+      matrix:
+        configuration: [Release, Debug]
+
     runs-on: self-hosted
     name: Build project with CMake
     steps:
@@ -38,14 +43,8 @@ jobs:
       run: |
         chmod +x build.sh
 
-    - name: Build project with CMake in Debug mode
+    - name: Build project with CMake
       env:
-        BUILD_CONFIGURATION: "Debug"
-      run: |
-        ./build.sh
-
-    - name: Build project with CMake in Release mode
-      env:
-        BUILD_CONFIGURATION: "Release"
+        BUILD_CONFIGURATION: ${{ matrix.configuration }}
       run: |
         ./build.sh
