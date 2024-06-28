@@ -73,6 +73,7 @@ target_link_options(
 target_sources(
     ${TARGET_NAME} PRIVATE
     "Core\\Src\\main.c"
+    "Core\\Src\\nrf24.c"
     "Core\\Src\\radio.c"
     "Core\\Src\\retarget.c"
     "Core\\Src\\stm32f4xx_hal_msp.c"
@@ -81,7 +82,6 @@ target_sources(
     "Core\\Src\\sysmem.c"
     "Core\\Src\\system_stm32f4xx.c"
     "Core\\Startup\\startup_stm32f411retx.s"
-    "Drivers\\nrf24\\src\\nrf24.c"
     "Drivers\\STM32F4xx_HAL_Driver\\Src\\stm32f4xx_hal_cortex.c"
     "Drivers\\STM32F4xx_HAL_Driver\\Src\\stm32f4xx_hal_dma_ex.c"
     "Drivers\\STM32F4xx_HAL_Driver\\Src\\stm32f4xx_hal_dma.c"

@@ -119,7 +119,7 @@ nrf24_hal_status_t nrf24_set_ptx_mode(struct nrf24_t *nrf24) {
     return nrf24_write_register(nrf24, NRF24_REG_CONFIG, &config, 1);
 }
 
-nrf24_hal_status_t nrf24_set_crc_mode(struct nrf24_t *nrf24, nrf24_crc_mode_t crc_mode) {
+nrf24_hal_status_t nrf24_set_crc_mode(struct nrf24_t *nrf24, enum nrf24_crc_mode_t crc_mode) {
     nrf24_hal_status_t status;
     uint8_t config;
 
@@ -170,28 +170,25 @@ nrf24_hal_status_t nrf24_set_rx_pipe(struct nrf24_t *nrf24, uint8_t pipe, bool e
     return nrf24_write_register(nrf24, NRF24_REG_EN_RXADDR, &en_rxaddr, 1);
 }
 
-nrf24_hal_status_t nrf24_set_address_width(struct nrf24_t *nrf24, nrf24_address_width_t addr_width) {
-    nrf24_hal_status_t status;
+nrf24_hal_status_t nrf24_set_address_width(struct nrf24_t *nrf24, enum nrf24_address_width_t addr_width) {
     uint8_t setup_aw = addr_width - 2;
 
     return nrf24_write_register(nrf24, NRF24_REG_SETUP_AW, &setup_aw, 1);
 }
 
-nrf24_hal_status_t nrf24_setup_retransmission(struct nrf24_t *nrf24, nrf24_auto_retransmit_delay_t delay, nrf24_auto_retransmit_count_t count) {
-    nrf24_hal_status_t status;
+nrf24_hal_status_t nrf24_setup_retransmission(struct nrf24_t *nrf24, enum nrf24_auto_retransmit_delay_t delay, enum nrf24_auto_retransmit_count_t count) {
     uint8_t setup_retr = (delay << 4) | count;
 
     return nrf24_write_register(nrf24, NRF24_REG_SETUP_RETR, &setup_retr, 1);
 }
 
 nrf24_hal_status_t nrf24_set_radio_channel(struct nrf24_t *nrf24, uint8_t channel) {
-    nrf24_hal_status_t status;
     uint8_t rf_ch = channel;
 
     return nrf24_write_register(nrf24, NRF24_REG_RF_CH, &rf_ch, 1);
 }
 
-nrf24_hal_status_t nrf24_set_radio_output_power(struct nrf24_t *nrf24, nrf24_tx_power_t power) {
+nrf24_hal_status_t nrf24_set_radio_output_power(struct nrf24_t *nrf24, enum nrf24_tx_power_t power) {
     nrf24_hal_status_t status;
     uint8_t rf_setup;
 
@@ -206,7 +203,7 @@ nrf24_hal_status_t nrf24_set_radio_output_power(struct nrf24_t *nrf24, nrf24_tx_
     return nrf24_write_register(nrf24, NRF24_REG_RF_SETUP, &rf_setup, 1);
 }
 
-nrf24_hal_status_t nrf24_set_radio_data_rate(struct nrf24_t *nrf24, nrf24_air_data_rate_t data_rate) {
+nrf24_hal_status_t nrf24_set_radio_data_rate(struct nrf24_t *nrf24, enum nrf24_air_data_rate_t data_rate) {
     nrf24_hal_status_t status;
     uint8_t rf_setup;
 
@@ -234,8 +231,6 @@ nrf24_hal_status_t nrf24_get_carrier_detect(struct nrf24_t *nrf24, uint8_t *cd) 
 }
 
 nrf24_hal_status_t nrf24_set_major_pipe_address(struct nrf24_t *nrf24, uint8_t pipe, uint8_t *address) {
-    nrf24_hal_status_t status;
-
     if(pipe > 1){
         return HAL_ERROR;
     }
@@ -244,8 +239,6 @@ nrf24_hal_status_t nrf24_set_major_pipe_address(struct nrf24_t *nrf24, uint8_t p
 }
 
 nrf24_hal_status_t nrf24_set_minor_pipe_address(struct nrf24_t *nrf24, uint8_t pipe, uint8_t *address) {
-    nrf24_hal_status_t status;
-
     if(pipe > 5 && pipe < 2){
         return HAL_ERROR;
     }
@@ -254,8 +247,6 @@ nrf24_hal_status_t nrf24_set_minor_pipe_address(struct nrf24_t *nrf24, uint8_t p
 }
 
 nrf24_hal_status_t nrf24_get_major_pipe_address(struct nrf24_t *nrf24, uint8_t pipe, uint8_t *address) {
-    nrf24_hal_status_t status;
-
     if(pipe > 1){
         return HAL_ERROR;
     }
@@ -264,8 +255,6 @@ nrf24_hal_status_t nrf24_get_major_pipe_address(struct nrf24_t *nrf24, uint8_t p
 }
 
 nrf24_hal_status_t nrf24_get_minor_pipe_address(struct nrf24_t *nrf24, uint8_t pipe, uint8_t *address) {
-    nrf24_hal_status_t status;
-
     if(pipe > 5 && pipe < 2){
         return HAL_ERROR;
     }
