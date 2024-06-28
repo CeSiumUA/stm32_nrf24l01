@@ -32,6 +32,7 @@ extern "C" {
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "retarget.h"
+#include "radio.h"
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/
