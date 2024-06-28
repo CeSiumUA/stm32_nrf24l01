@@ -16,7 +16,6 @@ target_compile_definitions(
 target_include_directories(
     ${TARGET_NAME} PRIVATE
     "$<$<AND:$<CONFIG:Debug>,$<COMPILE_LANGUAGE:C>>:${PROJECT_SOURCE_DIR}/Core\\Inc>"
-    "$<$<AND:$<CONFIG:Debug>,$<COMPILE_LANGUAGE:C>>:${PROJECT_SOURCE_DIR}/Drivers\\nrf24\\inc>"
     "$<$<AND:$<CONFIG:Debug>,$<COMPILE_LANGUAGE:C>>:${PROJECT_SOURCE_DIR}/Drivers\\STM32F4xx_HAL_Driver\\Inc>"
     "$<$<AND:$<CONFIG:Debug>,$<COMPILE_LANGUAGE:C>>:${PROJECT_SOURCE_DIR}/Drivers\\STM32F4xx_HAL_Driver\\Inc\\Legacy>"
     "$<$<AND:$<CONFIG:Debug>,$<COMPILE_LANGUAGE:C>>:${PROJECT_SOURCE_DIR}/Drivers\\CMSIS\\Device\\ST\\STM32F4xx\\Include>"
@@ -74,6 +73,7 @@ target_link_options(
 target_sources(
     ${TARGET_NAME} PRIVATE
     "Core\\Src\\main.c"
+    "Core\\Src\\radio.c"
     "Core\\Src\\retarget.c"
     "Core\\Src\\stm32f4xx_hal_msp.c"
     "Core\\Src\\stm32f4xx_it.c"
