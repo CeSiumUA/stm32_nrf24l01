@@ -12,6 +12,7 @@
 #else
 #include <stdint.h>
 #include <string.h>
+#include <stdbool.h>
 #include "stm32f4xx_hal.h"
 #endif
 
@@ -25,8 +26,8 @@ typedef struct nrf24_gpio_pin_t {
     uint16_t pin;
 } nrf24_gpio_pin_t;
 
-#define NRF24_HAL_SET_PIN_HIGH(gpio_pin)              HAL_GPIO_WritePin((gpio_pin.port), (gpio_pin.pin), (GPIO_PIN_SET))
-#define NRF24_HAL_SET_PIN_LOW(gpio_pin)               HAL_GPIO_WritePin((gpio_pin.port), (gpio_pin.pin), (GPIO_PIN_RESET))
+#define NRF24_HAL_SET_PIN_HIGH(gpio_pin)                    HAL_GPIO_WritePin((gpio_pin.port), (gpio_pin.pin), (GPIO_PIN_SET))
+#define NRF24_HAL_SET_PIN_LOW(gpio_pin)                     HAL_GPIO_WritePin((gpio_pin.port), (gpio_pin.pin), (GPIO_PIN_RESET))
 #endif
 
 /*Commands*/
