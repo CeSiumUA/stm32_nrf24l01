@@ -16,6 +16,7 @@ target_compile_definitions(
 target_include_directories(
     ${TARGET_NAME} PRIVATE
     "$<$<AND:$<CONFIG:Debug>,$<COMPILE_LANGUAGE:C>>:${PROJECT_SOURCE_DIR}/Core\\Inc>"
+    "$<$<AND:$<CONFIG:Debug>,$<COMPILE_LANGUAGE:C>>:${PROJECT_SOURCE_DIR}/Drivers\\nrf24\\inc>"
     "$<$<AND:$<CONFIG:Debug>,$<COMPILE_LANGUAGE:C>>:${PROJECT_SOURCE_DIR}/Drivers\\STM32F4xx_HAL_Driver\\Inc>"
     "$<$<AND:$<CONFIG:Debug>,$<COMPILE_LANGUAGE:C>>:${PROJECT_SOURCE_DIR}/Drivers\\STM32F4xx_HAL_Driver\\Inc\\Legacy>"
     "$<$<AND:$<CONFIG:Debug>,$<COMPILE_LANGUAGE:C>>:${PROJECT_SOURCE_DIR}/Drivers\\CMSIS\\Device\\ST\\STM32F4xx\\Include>"
@@ -80,6 +81,7 @@ target_sources(
     "Core\\Src\\sysmem.c"
     "Core\\Src\\system_stm32f4xx.c"
     "Core\\Startup\\startup_stm32f411retx.s"
+    "Drivers\\nrf24\\src\\nrf24.c"
     "Drivers\\STM32F4xx_HAL_Driver\\Src\\stm32f4xx_hal_cortex.c"
     "Drivers\\STM32F4xx_HAL_Driver\\Src\\stm32f4xx_hal_dma_ex.c"
     "Drivers\\STM32F4xx_HAL_Driver\\Src\\stm32f4xx_hal_dma.c"
