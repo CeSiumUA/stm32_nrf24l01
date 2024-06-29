@@ -99,30 +99,6 @@ int main(void)
   MX_SPI2_Init();
   /* USER CODE BEGIN 2 */
   retarget_init(&huart2);
-  radio_init(&hspi2, &radio_1, &radio_2);
-  radio_shut_down(&radio_1);
-  HAL_Delay(500);
-  radio_shut_down(&radio_2);
-  HAL_Delay(1000);
-  radio_set_rx_mode(&radio_1);
-  radio_set_tx_mode(&radio_2);
-  char tx_data[] = "abcdefghijklmnopqrstuvwxyz";
-  char rx_data[27] = {0};
-  
-  printf("sending data (%s)...\n", tx_data);
-  radio_send(&radio_2, (uint8_t *)tx_data, sizeof(tx_data));
-  
-  while (radio_1_irq_flag == false)
-  {
-    printf("waiting for radio 1 interrupt...\n");
-    HAL_Delay(100);
-  }
-
-  radio_receive(&radio_1, (uint8_t *)rx_data, sizeof(rx_data));
-  printf("Received: %s\n", rx_data);
-  memset(rx_data, 0, sizeof(rx_data));
-  HAL_Delay(1000);
-
 
   /* USER CODE END 2 */
 
