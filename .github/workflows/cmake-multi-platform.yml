@@ -26,7 +26,7 @@ jobs:
       shell: bash
       run: |
         echo "Creating .cproject file"
-        echo ${{ secrets.CPROJECT_CONTENT }} >> .cproject
+        echo "${{ secrets.CPROJECT_CONTENT }}" >> .cproject
 
     - name: Build STM32CubeIDE project
       uses: xanderhendriks/action-build-stm32cubeide@v10.0
