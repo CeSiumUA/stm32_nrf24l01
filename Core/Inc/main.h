@@ -32,7 +32,6 @@ extern "C" {
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "retarget.h"
-#include "radio.h"
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/
@@ -60,25 +59,12 @@ void Error_Handler(void);
 /* Private defines -----------------------------------------------------------*/
 #define B1_Pin GPIO_PIN_13
 #define B1_GPIO_Port GPIOC
-#define B1_EXTI_IRQn EXTI15_10_IRQn
 #define USART_TX_Pin GPIO_PIN_2
 #define USART_TX_GPIO_Port GPIOA
 #define USART_RX_Pin GPIO_PIN_3
 #define USART_RX_GPIO_Port GPIOA
-#define RADIO_1_CE_Pin GPIO_PIN_5
-#define RADIO_1_CE_GPIO_Port GPIOA
-#define RADIO_1_CSN_Pin GPIO_PIN_6
-#define RADIO_1_CSN_GPIO_Port GPIOA
-#define RADIO_1_IRQ_Pin GPIO_PIN_7
-#define RADIO_1_IRQ_GPIO_Port GPIOA
-#define RADIO_1_IRQ_EXTI_IRQn EXTI9_5_IRQn
-#define RADIO_2_IRQ_Pin GPIO_PIN_12
-#define RADIO_2_IRQ_GPIO_Port GPIOB
-#define RADIO_2_IRQ_EXTI_IRQn EXTI15_10_IRQn
-#define RADIO_2_CSN_Pin GPIO_PIN_11
-#define RADIO_2_CSN_GPIO_Port GPIOA
-#define RADIO_2_CE_Pin GPIO_PIN_12
-#define RADIO_2_CE_GPIO_Port GPIOA
+#define LD2_Pin GPIO_PIN_5
+#define LD2_GPIO_Port GPIOA
 #define TMS_Pin GPIO_PIN_13
 #define TMS_GPIO_Port GPIOA
 #define TCK_Pin GPIO_PIN_14
@@ -87,8 +73,7 @@ void Error_Handler(void);
 #define SWO_GPIO_Port GPIOB
 
 /* USER CODE BEGIN Private defines */
-extern bool radio_1_irq_flag;
-extern bool radio_2_irq_flag;
+
 /* USER CODE END Private defines */
 
 #ifdef __cplusplus
