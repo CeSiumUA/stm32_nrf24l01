@@ -72,13 +72,6 @@ void Error_Handler(void);
 #define RADIO_1_IRQ_Pin GPIO_PIN_7
 #define RADIO_1_IRQ_GPIO_Port GPIOA
 #define RADIO_1_IRQ_EXTI_IRQn EXTI9_5_IRQn
-#define RADIO_2_IRQ_Pin GPIO_PIN_12
-#define RADIO_2_IRQ_GPIO_Port GPIOB
-#define RADIO_2_IRQ_EXTI_IRQn EXTI15_10_IRQn
-#define RADIO_2_CSN_Pin GPIO_PIN_11
-#define RADIO_2_CSN_GPIO_Port GPIOA
-#define RADIO_2_CE_Pin GPIO_PIN_12
-#define RADIO_2_CE_GPIO_Port GPIOA
 #define TMS_Pin GPIO_PIN_13
 #define TMS_GPIO_Port GPIOA
 #define TCK_Pin GPIO_PIN_14
@@ -87,8 +80,7 @@ void Error_Handler(void);
 #define SWO_GPIO_Port GPIOB
 
 /* USER CODE BEGIN Private defines */
-extern bool radio_1_irq_flag;
-extern bool radio_2_irq_flag;
+
 /* USER CODE END Private defines */
 
 #ifdef __cplusplus

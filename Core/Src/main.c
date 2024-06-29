@@ -45,11 +45,7 @@ SPI_HandleTypeDef hspi2;
 UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
-struct nrf24l01_t radio_1;
-struct nrf24l01_t radio_2;
 
-bool radio_1_irq_flag = false;
-bool radio_2_irq_flag = false;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -99,13 +95,13 @@ int main(void)
   MX_SPI2_Init();
   /* USER CODE BEGIN 2 */
   retarget_init(&huart2);
-
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+    printf("Hello World!\n");
     HAL_Delay(1000);
     /* USER CODE END WHILE */
 
@@ -249,7 +245,7 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOB_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOA, RADIO_1_CE_Pin|RADIO_1_CSN_Pin|RADIO_2_CSN_Pin|RADIO_2_CE_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOA, RADIO_1_CE_Pin|RADIO_1_CSN_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin : B1_Pin */
   GPIO_InitStruct.Pin = B1_Pin;
@@ -257,8 +253,8 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(B1_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : RADIO_1_CE_Pin RADIO_1_CSN_Pin RADIO_2_CSN_Pin RADIO_2_CE_Pin */
-  GPIO_InitStruct.Pin = RADIO_1_CE_Pin|RADIO_1_CSN_Pin|RADIO_2_CSN_Pin|RADIO_2_CE_Pin;
+  /*Configure GPIO pins : RADIO_1_CE_Pin RADIO_1_CSN_Pin */
+  GPIO_InitStruct.Pin = RADIO_1_CE_Pin|RADIO_1_CSN_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
@@ -269,12 +265,6 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(RADIO_1_IRQ_GPIO_Port, &GPIO_InitStruct);
-
-  /*Configure GPIO pin : RADIO_2_IRQ_Pin */
-  GPIO_InitStruct.Pin = RADIO_2_IRQ_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  HAL_GPIO_Init(RADIO_2_IRQ_GPIO_Port, &GPIO_InitStruct);
 
   /* EXTI interrupt init*/
   HAL_NVIC_SetPriority(EXTI9_5_IRQn, 0, 0);

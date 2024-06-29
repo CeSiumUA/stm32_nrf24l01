@@ -9,9 +9,9 @@ on:
     branches: [ "main" ]
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-
+  cube-ide-build:
+    runs-on: self-hosted
+    name: Build project with STM32CubeIDE
     steps:
     - uses: actions/checkout@v4
 
@@ -26,4 +26,25 @@ jobs:
       uses: xanderhendriks/action-build-stm32cubeide@v10.0
       with:
         project-path: '.'
-        project-target: 'stm32_nrf24l01'        
+        project-target: 'stm32_nrf24l01'
+  
+  cmake-build:
+
+    strategy:
+      matrix:
+        configuration: [Release, Debug]
+
+    runs-on: self-hosted
+    name: Build project with CMake
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set execution rights
+      run: |
+        chmod +x build.sh
+
+    - name: Build project with CMake
+      env:
+        BUILD_CONFIGURATION: ${{ matrix.configuration }}
+      run: |
+        ./build.sh
