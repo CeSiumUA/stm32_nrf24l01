@@ -9,7 +9,8 @@
 			"retarget.h": "c",
 			"stm32f4xx_hal_def.h": "c",
 			"stm32f4xx_hal.h": "c",
-			"main.h": "c"
+			"main.h": "c",
+			"radio.h": "c"
 		},
 		"cSpell.words": [
 			"GPIOB",
