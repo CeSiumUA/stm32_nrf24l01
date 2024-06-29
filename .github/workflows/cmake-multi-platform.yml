@@ -22,12 +22,6 @@ jobs:
       run: |
         echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
 
-    - name: Create .cproject file
-      shell: bash
-      run: |
-        echo "Creating .cproject file"
-        echo "${{ secrets.CPROJECT_CONTENT }}" >> .cproject
-
     - name: Build STM32CubeIDE project
       uses: xanderhendriks/action-build-stm32cubeide@v10.0
       with:
