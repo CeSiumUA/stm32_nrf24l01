@@ -8,13 +8,25 @@
 
 float temperature_calculate(uint16_t *adc_value)
 {
-    float v_sense = 0.0f;
-    float v_ref = 0.0f;
     float temperature = 0.0f;
+    float vdda, vref = 0.0f;
+    uint32_t temp_sum = 0;
+    uint32_t vref_sum = 0;
+    uint16_t temp_avg, vref_avg = 0;
+    for(int i = 0; i < (TEMPERATURE_ADC_BUFFER_SIZE / 4); i++)
+    {
+        temp_sum += adc_value[i * 2];
+        vref_sum += adc_value[i * 2 + 1];
+    }
 
-    v_ref = (float)((V_REF_INT * 4095.0) / adc_value[0]);
-    v_sense = (float)((v_ref * adc_value[1]) / 4095.0);
-    temperature = (float)((v_sense - V_AT_25C) * 1000.0f/ AVG_SLPOE) + 25.0f;
+    temp_avg = temp_sum / (TEMPERATURE_ADC_BUFFER_SIZE / 4);
+    vref_avg = vref_sum / (TEMPERATURE_ADC_BUFFER_SIZE / 4);
+
+    vdda = (float)TEMPERATURE_TS_CAL_VREF * (float)(*TEMPERATURE_V_REF_INT_CAL) / (float)vref_avg / 1000.0f;
+
+    vref = (float)vdda / 4095 * vref_avg;
+
+    temperature = (float)(((float)TEMPERATURE_TS_CAL2_TEMP - TEMPERATURE_TS_CAL1_TEMP) / (float)((*TEMPERATURE_TS_CAL2_ADDR) - (*TEMPERATURE_TS_CAL1_ADDR)) * (float)(temp_avg - (*TEMPERATURE_TS_CAL1_ADDR)) + TEMPERATURE_TS_CAL1_TEMP))));
 
     return temperature;
 }
