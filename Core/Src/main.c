@@ -111,15 +111,18 @@ int main(void)
   /* USER CODE BEGIN 2 */
   HAL_Delay(1000);
   retarget_init(&huart2);
+  printf("Basic setup done!\n");
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  printf("Hello World!\n");
+  printf("Starting timer...!\n");
   status = HAL_TIM_Base_Start(&htim3);
   if(status != HAL_OK){
     printf("Error starting timer\n");
   }
+  
+  printf("Starting ADC in DMA mode...!\n");
   status = HAL_ADC_Start_DMA(&hadc1, (uint32_t *)adc_data, TEMPERATURE_ADC_BUFFER_SIZE);
   if(status != HAL_OK){
     printf("Error starting ADC\n");
