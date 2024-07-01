@@ -10,6 +10,8 @@
 
 #include <stdint.h>
 
+// Some defines are added for possible better temperature calculation algorithm
+
 #define TEMPERATURE_AVG_SLPOE                           (2.5f)
 #define TEMPERATURE_V_AT_25C                            (0.76f)
 #define TEMPERATURE_V_REF_INT                           (1.21f)
