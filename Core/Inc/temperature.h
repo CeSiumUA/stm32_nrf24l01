@@ -20,7 +20,7 @@
 #define TEMPERATURE_TS_CAL_VREF                         (3300UL)
 #define TEMPERATURE_TS_CAL_VREFANALOG                   (3300UL)
 #define TEMPERATURE_V_REF_INT_CAL                       ((uint16_t *)0x1FFF7A2AU)
-#define TEMPERATURE_ADC_BUFFER_SIZE                     (40)
+#define TEMPERATURE_ADC_BUFFER_SIZE                     (2000)
 
 float temperature_calculate(uint16_t *adc_value);
 
