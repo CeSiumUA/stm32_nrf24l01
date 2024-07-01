@@ -33,11 +33,11 @@ extern "C" {
 /* USER CODE BEGIN Includes */
 #include "retarget.h"
 #include "radio.h"
+#include "temperature.h"
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/
 /* USER CODE BEGIN ET */
-
 /* USER CODE END ET */
 
 /* Exported constants --------------------------------------------------------*/
