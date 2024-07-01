@@ -57,6 +57,7 @@
 /* External variables --------------------------------------------------------*/
 extern DMA_HandleTypeDef hdma_adc1;
 extern ADC_HandleTypeDef hadc1;
+extern bool adc_data_ready;
 /* USER CODE BEGIN EV */
 /* USER CODE END EV */
 
@@ -255,5 +256,8 @@ void DMA2_Stream0_IRQHandler(void)
 }
 
 /* USER CODE BEGIN 1 */
-
+void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc)
+{
+  adc_data_ready = true;
+}
 /* USER CODE END 1 */

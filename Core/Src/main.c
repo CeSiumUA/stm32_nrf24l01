@@ -80,7 +80,7 @@ int main(void)
 {
 
   /* USER CODE BEGIN 1 */
-
+  HAL_StatusTypeDef status;
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -114,8 +114,14 @@ int main(void)
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   printf("Hello World!\n");
-  HAL_TIM_Base_Start(&htim3);
-  HAL_ADC_Start_DMA(&hadc1, (uint32_t *)adc_data, 2);
+  status = HAL_TIM_Base_Start(&htim3);
+  if(status != HAL_OK){
+    printf("Error starting timer\n");
+  }
+  status = HAL_ADC_Start_DMA(&hadc1, (uint32_t *)adc_data, 2);
+  if(status != HAL_OK){
+    printf("Error starting ADC\n");
+  }
   while (1)
   {
     if(adc_data_ready){
@@ -420,10 +426,7 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
-void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc)
-{
-  adc_data_ready = true;
-}
+
 /* USER CODE END 4 */
 
 /**
