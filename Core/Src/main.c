@@ -187,6 +187,7 @@ int main(void)
     radio_status = radio_receive(&radio, radio_receive_buffer);
     if(radio_status == RADIO_OK){
       printf("Received data: %s\n", radio_receive_buffer);
+      time_to_send_data = true;
     }
     else if(radio_status == RADIO_RETRY){
       printf("Radio has no data to receive, retrying\n");
