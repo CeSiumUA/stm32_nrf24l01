@@ -241,7 +241,7 @@ enum radio_operation_result_t radio_send(struct radio_t *radio, uint8_t *data)
     if(res != HAL_OK)
     {
         printf("Error writing TX payload: %d\n", res);
-        return;
+        return RADIO_ERROR;
     }
 
     nrf24_ce_on(radio->nrf_radio);

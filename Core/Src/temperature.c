@@ -32,7 +32,6 @@ void temperature_process_adc_data(uint16_t *adc_data){
         return;
     }
     temperature = temperature_calculate(adc_data_ptr);
-    printf("Temperature: %f\n", temperature);
 }
 
 float temperature_get_temperature(void){

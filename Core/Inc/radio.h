@@ -33,6 +33,6 @@ enum radio_operation_result_t radio_process_irq(struct radio_t *radio);
 enum radio_operation_result_t radio_shut_down(struct radio_t *radio);
 enum radio_operation_result_t radio_receive(struct radio_t *radio, uint8_t *data);
 enum radio_operation_result_t radio_init(struct radio_t *radio);
-enum radio_operation_result_t
+enum radio_operation_result_t radio_send(struct radio_t *radio, uint8_t *data);
 
 #endif /* INC_RADIO_H_ */
