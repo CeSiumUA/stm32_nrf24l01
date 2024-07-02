@@ -23,7 +23,7 @@
 #define TEMPERATURE_TS_CAL_VREF                         (3300UL)
 #define TEMPERATURE_TS_CAL_VREFANALOG                   (3300UL)
 #define TEMPERATURE_V_REF_INT_CAL                       ((uint16_t *)0x1FFF7A2AU)
-#define TEMPERATURE_ADC_BUFFER_SIZE                     (2000)
+#define TEMPERATURE_ADC_BUFFER_SIZE                     (40)
 
 void temperature_half_complete_raise_flag(void);
 void temperature_full_complete_raise_flag(void);
