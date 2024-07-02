@@ -7,27 +7,16 @@
 
 #include "radio.h"
 
-static bool radio_irq;
 static bool radio_data_ready = false;
 static bool tx_ack_received = false;
 static bool tx_max_retries_reached = false;
 static int radio_available_data_pipe = 0;
-
-void radio_raise_irq_flag(void)
-{
-    radio_irq = true;
-}
 
 enum radio_operation_result_t radio_process_irq(struct radio_t *radio)
 {
     uint8_t status;
     nrf24_hal_status_t hal_status;
     uint8_t pipe;
-    
-    if(!radio_irq)
-    {
-        return RADIO_RETRY;
-    }
 
     hal_status = nrf24_get_status(radio->nrf_radio, &status);
 
@@ -71,8 +60,6 @@ enum radio_operation_result_t radio_process_irq(struct radio_t *radio)
         printf("Error clearing status: %d\n", hal_status);
         return RADIO_ERROR;
     }
-
-    radio_irq = false;
 
     return RADIO_OK;
 }

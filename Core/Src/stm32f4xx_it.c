@@ -60,6 +60,9 @@ extern DMA_HandleTypeDef hdma_adc1;
 extern ADC_HandleTypeDef hadc1;
 extern TIM_HandleTypeDef htim4;
 /* USER CODE BEGIN EV */
+extern bool time_to_send_data;
+extern struct radio_t radio;
+uint8_t irq4_acc = 0;
 /* USER CODE END EV */
 
 /******************************************************************************/
@@ -234,7 +237,12 @@ void EXTI9_5_IRQHandler(void)
 void TIM4_IRQHandler(void)
 {
   /* USER CODE BEGIN TIM4_IRQn 0 */
-  printf("TIM4 IRQ\n");
+  irq4_acc++;
+  if(irq4_acc % 10 == 0)
+  {
+    time_to_send_data = true;
+    irq4_acc = 0;
+  }
   /* USER CODE END TIM4_IRQn 0 */
   HAL_TIM_IRQHandler(&htim4);
   /* USER CODE BEGIN TIM4_IRQn 1 */
@@ -248,7 +256,8 @@ void TIM4_IRQHandler(void)
 void EXTI15_10_IRQHandler(void)
 {
   /* USER CODE BEGIN EXTI15_10_IRQn 0 */
-  radio_raise_irq_flag();
+  //FIXME not a good idea to make such operations in IRQ context
+  radio_process_irq(&radio);
   /* USER CODE END EXTI15_10_IRQn 0 */
   HAL_GPIO_EXTI_IRQHandler(B1_Pin);
   /* USER CODE BEGIN EXTI15_10_IRQn 1 */

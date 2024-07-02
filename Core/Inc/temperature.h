@@ -29,5 +29,6 @@ void temperature_half_complete_raise_flag(void);
 void temperature_full_complete_raise_flag(void);
 void temperature_process_adc_data(uint16_t *adc_data);
 float temperature_calculate(uint16_t *adc_value);
+float temperature_get_temperature(void);
 
 #endif /* INC_TEMPERATURE_H_ */

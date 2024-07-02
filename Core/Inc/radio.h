@@ -28,7 +28,6 @@ enum radio_operation_result_t
     RADIO_RETRY,
 };
 
-void radio_raise_irq_flag(void);
 enum radio_operation_result_t radio_process_irq(struct radio_t *radio);
 enum radio_operation_result_t radio_shut_down(struct radio_t *radio);
 enum radio_operation_result_t radio_receive(struct radio_t *radio, uint8_t *data);

@@ -52,6 +52,32 @@ UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
 uint16_t adc_data[TEMPERATURE_ADC_BUFFER_SIZE] = {0};
+uint8_t radio_receive_buffer[32] = {0};
+bool time_to_send_data = false;
+struct nrf24_t nrf_radio = {
+  .spi = &hspi2,
+  .ce = {
+    .port = RADIO_1_CE_GPIO_Port,
+    .pin = RADIO_1_CE_Pin,
+  },
+  .csn = {
+    .port = RADIO_1_CSN_GPIO_Port,
+    .pin = RADIO_1_CSN_Pin,
+  },
+  .irq = {
+    .port = RADIO_1_IRQ_GPIO_Port,
+    .pin = RADIO_1_IRQ_Pin,
+  },
+}; 
+
+struct radio_t radio = {
+  .address_width = NRF24_AW_5_BYTES,
+  .channel = 2,
+  .data_rate = NRF24_ADR_1_MBPS,
+  .data_width = 32,
+  .is_in_rx_mode = true,
+  .nrf_radio = &nrf_radio,
+};
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -81,6 +107,8 @@ int main(void)
 
   /* USER CODE BEGIN 1 */
   HAL_StatusTypeDef status;
+  enum radio_operation_result_t radio_status;
+  float temperature = 0.0f;
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -115,6 +143,10 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+
+  printf("Starting radio...!\n");
+  radio_status = radio_init(&radio);
+
   printf("Starting timer...!\n");
   status = HAL_TIM_Base_Start(&htim3);
   if(status != HAL_OK){
@@ -126,9 +158,42 @@ int main(void)
   if(status != HAL_OK){
     printf("Error starting ADC\n");
   }
+
+  printf("Starting sending timer...!\n");
+  status = HAL_TIM_Base_Start_IT(&htim4);
+  if(status != HAL_OK){
+    printf("Error starting sending timer\n");
+  }
   
   while (1)
   {
+    temperature_process_adc_data(adc_data);
+    if(time_to_send_data){
+      temperature = temperature_get_temperature();
+      printf("Temperature: %.2f\n", temperature);
+      radio_status = radio_send(&radio, (uint8_t *)&temperature);
+      if(radio_status == RADIO_OK){
+        printf("Data sent successfully\n");
+        time_to_send_data = false;
+      }
+      else if(radio_status == RADIO_RETRY){
+        printf("Radio busy, retrying\n");
+      }
+      else{
+        printf("Error sending data\n");
+      }
+    }
+
+    radio_status = radio_receive(&radio, radio_receive_buffer);
+    if(radio_status == RADIO_OK){
+      printf("Received data: %s\n", radio_receive_buffer);
+    }
+    else if(radio_status == RADIO_RETRY){
+      printf("Radio has no data to receive, retrying\n");
+    }
+    else{
+      printf("Error receiving data\n");
+    }
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
