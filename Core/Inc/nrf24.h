@@ -94,6 +94,11 @@ typedef struct nrf24_gpio_pin_t {
 
 #define NRF24_REG_STATUS                         (0x07)
 #define NRF24_REG_STATUS_RESET_VALUE             (0b01111110)
+#define NRF24_REG_STATUS_MASK_RX_DR              (1 << 6)
+#define NRF24_REG_STATUS_MASK_TX_DS              (1 << 5)
+#define NRF24_REG_STATUS_MASK_MAX_RT             (1 << 4)
+#define NRF24_REG_STATUS_MASK_RX_P_NO            (0b00001110)
+#define NRF24_REG_STATUS_MASK_TX_FULL            (1 << 0)
 
 #define NRF24_REG_OBSERVE_TX                     (0x08)
 #define NRF24_REG_OBSERVE_TX_RESET_VALUE         (0b00000000)
@@ -227,6 +232,7 @@ nrf24_hal_status_t nrf24_get_radio_channel(struct nrf24_t *nrf24, uint8_t *rf_ch
 nrf24_hal_status_t nrf24_set_radio_data_rate(struct nrf24_t *nrf24, enum nrf24_air_data_rate_t data_rate);
 nrf24_hal_status_t nrf24_get_rf_setup(struct nrf24_t *nrf24, uint8_t *rf_setup);
 nrf24_hal_status_t nrf24_get_status(struct nrf24_t *nrf24, uint8_t *status);
+nrf24_hal_status_t nrf24_set_status(struct nrf24_t *nrf24, uint8_t *status);
 nrf24_hal_status_t nrf24_get_observe_tx(struct nrf24_t *nrf24, uint8_t *observe_tx);
 nrf24_hal_status_t nrf24_get_carrier_detect(struct nrf24_t *nrf24, uint8_t *cd);
 nrf24_hal_status_t nrf24_set_major_pipe_address(struct nrf24_t *nrf24, uint8_t pipe, uint8_t *address);

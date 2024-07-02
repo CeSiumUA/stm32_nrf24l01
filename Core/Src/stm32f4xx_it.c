@@ -22,6 +22,7 @@
 #include "stm32f4xx_it.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "radio.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -57,9 +58,11 @@
 /* External variables --------------------------------------------------------*/
 extern DMA_HandleTypeDef hdma_adc1;
 extern ADC_HandleTypeDef hadc1;
+extern TIM_HandleTypeDef htim4;
 /* USER CODE BEGIN EV */
-extern bool adc_full_data_ready;
-extern bool adc_half_data_ready;
+extern bool time_to_send_data;
+extern struct radio_t radio;
+uint8_t irq4_acc = 0;
 /* USER CODE END EV */
 
 /******************************************************************************/
@@ -229,12 +232,32 @@ void EXTI9_5_IRQHandler(void)
 }
 
 /**
+  * @brief This function handles TIM4 global interrupt.
+  */
+void TIM4_IRQHandler(void)
+{
+  /* USER CODE BEGIN TIM4_IRQn 0 */
+  irq4_acc++;
+  if(irq4_acc % 10 == 0)
+  {
+    time_to_send_data = true;
+    irq4_acc = 0;
+  }
+  /* USER CODE END TIM4_IRQn 0 */
+  HAL_TIM_IRQHandler(&htim4);
+  /* USER CODE BEGIN TIM4_IRQn 1 */
+
+  /* USER CODE END TIM4_IRQn 1 */
+}
+
+/**
   * @brief This function handles EXTI line[15:10] interrupts.
   */
 void EXTI15_10_IRQHandler(void)
 {
   /* USER CODE BEGIN EXTI15_10_IRQn 0 */
-
+  //FIXME not a good idea to make such operations in IRQ context
+  radio_process_irq(&radio);
   /* USER CODE END EXTI15_10_IRQn 0 */
   HAL_GPIO_EXTI_IRQHandler(B1_Pin);
   /* USER CODE BEGIN EXTI15_10_IRQn 1 */
@@ -259,11 +282,11 @@ void DMA2_Stream0_IRQHandler(void)
 /* USER CODE BEGIN 1 */
 void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc)
 {
-  adc_full_data_ready = true;
+  temperature_full_complete_raise_flag();
 }
 
 void HAL_ADC_ConvHalfCpltCallback(ADC_HandleTypeDef* hadc)
 {
-  adc_half_data_ready = true;
+  temperature_half_complete_raise_flag();
 }
 /* USER CODE END 1 */

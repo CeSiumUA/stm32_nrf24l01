@@ -6,6 +6,38 @@
  */
 #include "temperature.h"
 
+static bool adc_half_data_ready = false;
+static bool adc_full_data_ready = false;
+static float temperature = 0.0f;
+
+void temperature_half_complete_raise_flag(void){
+    adc_half_data_ready = true;
+}
+
+void temperature_full_complete_raise_flag(void){
+    adc_full_data_ready = true;
+}
+
+void temperature_process_adc_data(uint16_t *adc_data){
+    uint16_t *adc_data_ptr;
+    if(adc_full_data_ready){
+        adc_data_ptr = adc_data;
+        adc_full_data_ready = false;
+    }
+    else if(adc_half_data_ready){
+        adc_data_ptr = &(adc_data[(TEMPERATURE_ADC_BUFFER_SIZE/2)]);
+        adc_half_data_ready = false;
+    }
+    else{
+        return;
+    }
+    temperature = temperature_calculate(adc_data_ptr);
+}
+
+float temperature_get_temperature(void){
+    return temperature;
+}
+
 float temperature_calculate(uint16_t *adc_value)
 {
     float temperature = 0.0f;

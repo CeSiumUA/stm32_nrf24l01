@@ -46,14 +46,38 @@ DMA_HandleTypeDef hdma_adc1;
 SPI_HandleTypeDef hspi2;
 
 TIM_HandleTypeDef htim3;
+TIM_HandleTypeDef htim4;
 
 UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
 uint16_t adc_data[TEMPERATURE_ADC_BUFFER_SIZE] = {0};
-bool adc_full_data_ready = false;
-bool adc_half_data_ready = false;
-float temperature;
+uint8_t radio_receive_buffer[32] = {0};
+bool time_to_send_data = false;
+struct nrf24_t nrf_radio = {
+  .spi = &hspi2,
+  .ce = {
+    .port = RADIO_1_CE_GPIO_Port,
+    .pin = RADIO_1_CE_Pin,
+  },
+  .csn = {
+    .port = RADIO_1_CSN_GPIO_Port,
+    .pin = RADIO_1_CSN_Pin,
+  },
+  .irq = {
+    .port = RADIO_1_IRQ_GPIO_Port,
+    .pin = RADIO_1_IRQ_Pin,
+  },
+}; 
+
+struct radio_t radio = {
+  .address_width = NRF24_AW_5_BYTES,
+  .channel = 2,
+  .data_rate = NRF24_ADR_1_MBPS,
+  .data_width = 32,
+  .is_in_rx_mode = true,
+  .nrf_radio = &nrf_radio,
+};
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -64,6 +88,7 @@ static void MX_USART2_UART_Init(void);
 static void MX_SPI2_Init(void);
 static void MX_ADC1_Init(void);
 static void MX_TIM3_Init(void);
+static void MX_TIM4_Init(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
@@ -82,7 +107,8 @@ int main(void)
 
   /* USER CODE BEGIN 1 */
   HAL_StatusTypeDef status;
-  uint16_t *adc_data_ptr;
+  enum radio_operation_result_t radio_status;
+  float temperature = 0.0f;
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -108,6 +134,7 @@ int main(void)
   MX_SPI2_Init();
   MX_ADC1_Init();
   MX_TIM3_Init();
+  MX_TIM4_Init();
   /* USER CODE BEGIN 2 */
   HAL_Delay(1000);
   retarget_init(&huart2);
@@ -116,6 +143,10 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+
+  printf("Starting radio...!\n");
+  radio_status = radio_init(&radio);
+
   printf("Starting timer...!\n");
   status = HAL_TIM_Base_Start(&htim3);
   if(status != HAL_OK){
@@ -127,21 +158,43 @@ int main(void)
   if(status != HAL_OK){
     printf("Error starting ADC\n");
   }
+
+  printf("Starting sending timer...!\n");
+  status = HAL_TIM_Base_Start_IT(&htim4);
+  if(status != HAL_OK){
+    printf("Error starting sending timer\n");
+  }
+  
   while (1)
   {
-    if(adc_full_data_ready){
-      adc_data_ptr = adc_data;
-      adc_full_data_ready = false;
+    temperature_process_adc_data(adc_data);
+    if(time_to_send_data){
+      temperature = temperature_get_temperature();
+      printf("Temperature: %.2f\n", temperature);
+      radio_status = radio_send(&radio, (uint8_t *)&temperature);
+      if(radio_status == RADIO_OK){
+        printf("Data sent successfully\n");
+        time_to_send_data = false;
+      }
+      else if(radio_status == RADIO_RETRY){
+        printf("Radio busy, retrying\n");
+      }
+      else{
+        printf("Error sending data\n");
+      }
     }
-    else if(adc_half_data_ready){
-      adc_data_ptr = &(adc_data[(TEMPERATURE_ADC_BUFFER_SIZE/2)]);
-      adc_half_data_ready = false;
+
+    radio_status = radio_receive(&radio, radio_receive_buffer);
+    if(radio_status == RADIO_OK){
+      printf("Received data: %s\n", radio_receive_buffer);
+      time_to_send_data = true;
+    }
+    else if(radio_status == RADIO_RETRY){
+      printf("Radio has no data to receive, retrying\n");
     }
     else{
-      continue;
+      printf("Error receiving data\n");
     }
-    temperature = temperature_calculate(adc_data_ptr);
-    printf("Temperature: %f\n", temperature);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -336,6 +389,51 @@ static void MX_TIM3_Init(void)
   /* USER CODE BEGIN TIM3_Init 2 */
 
   /* USER CODE END TIM3_Init 2 */
+
+}
+
+/**
+  * @brief TIM4 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_TIM4_Init(void)
+{
+
+  /* USER CODE BEGIN TIM4_Init 0 */
+
+  /* USER CODE END TIM4_Init 0 */
+
+  TIM_ClockConfigTypeDef sClockSourceConfig = {0};
+  TIM_MasterConfigTypeDef sMasterConfig = {0};
+
+  /* USER CODE BEGIN TIM4_Init 1 */
+
+  /* USER CODE END TIM4_Init 1 */
+  htim4.Instance = TIM4;
+  htim4.Init.Prescaler = 41999;
+  htim4.Init.CounterMode = TIM_COUNTERMODE_UP;
+  htim4.Init.Period = 59999;
+  htim4.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+  htim4.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_ENABLE;
+  if (HAL_TIM_Base_Init(&htim4) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sClockSourceConfig.ClockSource = TIM_CLOCKSOURCE_INTERNAL;
+  if (HAL_TIM_ConfigClockSource(&htim4, &sClockSourceConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
+  sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
+  if (HAL_TIMEx_MasterConfigSynchronization(&htim4, &sMasterConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN TIM4_Init 2 */
+
+  /* USER CODE END TIM4_Init 2 */
 
 }
 
