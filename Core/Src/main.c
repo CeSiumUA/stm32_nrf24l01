@@ -51,9 +51,6 @@ UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
 uint16_t adc_data[TEMPERATURE_ADC_BUFFER_SIZE] = {0};
-bool adc_full_data_ready = false;
-bool adc_half_data_ready = false;
-float temperature;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -82,7 +79,6 @@ int main(void)
 
   /* USER CODE BEGIN 1 */
   HAL_StatusTypeDef status;
-  uint16_t *adc_data_ptr;
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -129,19 +125,6 @@ int main(void)
   }
   while (1)
   {
-    if(adc_full_data_ready){
-      adc_data_ptr = adc_data;
-      adc_full_data_ready = false;
-    }
-    else if(adc_half_data_ready){
-      adc_data_ptr = &(adc_data[(TEMPERATURE_ADC_BUFFER_SIZE/2)]);
-      adc_half_data_ready = false;
-    }
-    else{
-      continue;
-    }
-    temperature = temperature_calculate(adc_data_ptr);
-    printf("Temperature: %f\n", temperature);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
