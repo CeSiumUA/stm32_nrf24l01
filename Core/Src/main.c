@@ -187,6 +187,7 @@ int main(void)
       }
       else{
         printf("Error sending data\n");
+        time_to_send_data = false;
       }
     }
 
