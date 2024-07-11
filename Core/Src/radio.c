@@ -19,12 +19,13 @@ enum radio_operation_result_t radio_process_irq(struct radio_t *radio)
     uint8_t pipe;
 
     hal_status = nrf24_get_status(radio->nrf_radio, &status);
-
     if(hal_status != HAL_OK)
     {
         printf("Error getting status: %d\n", hal_status);
         return RADIO_ERROR;
     }
+
+    printf("status: %d\n", status);
 
     if(status & NRF24_REG_STATUS_MASK_TX_DS)
     {
@@ -194,21 +195,26 @@ enum radio_operation_result_t radio_receive(struct radio_t *radio, uint8_t *data
     return RADIO_OK;
 }
 
-enum radio_operation_result_t radio_send(struct radio_t *radio, uint8_t *data)
+enum radio_operation_result_t radio_send(struct radio_t *radio, uint8_t *data, uint8_t len)
 {
     nrf24_hal_status_t res;
     uint32_t start_time;
+    uint8_t config;
     enum radio_operation_result_t radio_res = RADIO_OK;
 
-    if(radio_data_ready || radio->is_in_rx_mode)
+    if(radio_data_ready && radio->is_in_rx_mode)
     {
         return RADIO_RETRY;
     }
 
     nrf24_ce_off(radio->nrf_radio);
 
+    printf("ce off...\n");
+
     tx_max_retries_reached = false;
     tx_ack_received = false;
+
+    HAL_Delay(10);
 
     res = nrf24_flush_tx_fifo(radio->nrf_radio);
     if(res != HAL_OK)
@@ -217,6 +223,10 @@ enum radio_operation_result_t radio_send(struct radio_t *radio, uint8_t *data)
         return RADIO_ERROR;
     }
 
+    printf("TX FIFO flushed...\n");
+
+    HAL_Delay(10);
+
     res = nrf24_set_ptx_mode(radio->nrf_radio);
     if(res != HAL_OK)
     {
@@ -224,14 +234,43 @@ enum radio_operation_result_t radio_send(struct radio_t *radio, uint8_t *data)
         return RADIO_ERROR;
     }
 
-    res = nrf24_write_tx_fifo(radio->nrf_radio, data, radio->data_width);
+    printf("PTX mode set...\n");
+
+    HAL_Delay(10);
+
+    printf("writing TX payload (%u bytes)...\n", len);
+
+    res = nrf24_write_tx_fifo(radio->nrf_radio, data, len);
     if(res != HAL_OK)
     {
         printf("Error writing TX payload: %d\n", res);
         return RADIO_ERROR;
     }
 
+    printf("TX payload written...\n");
+
+    HAL_Delay(10);
+
+    res = nrf24_get_status(radio->nrf_radio, &config);
+    if(res != HAL_OK)
+    {
+        printf("Error getting status: %d\n", res);
+        return RADIO_ERROR;
+    }
+    printf("Status: %d\n", config);
+
     nrf24_ce_on(radio->nrf_radio);
+
+    printf("ce on...\n");
+
+    res = nrf24_get_config(radio->nrf_radio, &config);
+    if(res != HAL_OK)
+    {
+        printf("Error getting config: %d\n", res);
+        return RADIO_ERROR;
+    }
+
+    printf("config: %d\n", config);
 
     start_time = HAL_GetTick();
 
@@ -246,6 +285,22 @@ enum radio_operation_result_t radio_send(struct radio_t *radio, uint8_t *data)
 
         if((HAL_GetTick() - start_time) % 5000 == 0)
         {
+            res = nrf24_get_observe_tx(radio->nrf_radio, &config);
+            if(res != HAL_OK)
+            {
+                printf("Error getting observe TX: %d\n", res);
+                return RADIO_ERROR;
+            }
+            printf("Retransmissions: %d\n", config);
+
+            res = nrf24_get_status(radio->nrf_radio, &config);
+            if(res != HAL_OK)
+            {
+                printf("Error getting status: %d\n", res);
+                return RADIO_ERROR;
+            }
+            printf("Status: %d\n", config);
+
             printf("No ACK received in 5 seconds, retrying...\n");
         }
     }

@@ -8,7 +8,7 @@
 #ifndef INC_RADIO_H_
 #define INC_RADIO_H_
 
-#include "nrf24.h"
+#include "nrf24_hal.h"
 #include "retarget.h"
 
 struct radio_t
@@ -32,6 +32,6 @@ enum radio_operation_result_t radio_process_irq(struct radio_t *radio);
 enum radio_operation_result_t radio_shut_down(struct radio_t *radio);
 enum radio_operation_result_t radio_receive(struct radio_t *radio, uint8_t *data);
 enum radio_operation_result_t radio_init(struct radio_t *radio);
-enum radio_operation_result_t radio_send(struct radio_t *radio, uint8_t *data);
+enum radio_operation_result_t radio_send(struct radio_t *radio, uint8_t *data, uint8_t len);
 
 #endif /* INC_RADIO_H_ */

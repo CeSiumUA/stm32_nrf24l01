@@ -237,8 +237,7 @@ void EXTI9_5_IRQHandler(void)
 void TIM4_IRQHandler(void)
 {
   /* USER CODE BEGIN TIM4_IRQn 0 */
-  irq4_acc++;
-  if(irq4_acc % 10 == 0)
+  if((++irq4_acc) % 2 == 0)
   {
     time_to_send_data = true;
     irq4_acc = 0;
