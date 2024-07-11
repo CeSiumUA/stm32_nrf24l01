@@ -25,25 +25,20 @@ enum radio_operation_result_t radio_process_irq(struct radio_t *radio)
         return RADIO_ERROR;
     }
 
-    printf("status: %d\n", status);
-
     if(status & NRF24_REG_STATUS_MASK_TX_DS)
     {
-        printf("Data sent, ACK received!\n");
         tx_ack_received = true;
         status |= NRF24_REG_STATUS_MASK_TX_DS;
     }
 
     if(status & NRF24_REG_STATUS_MASK_RX_DR)
     {
-        printf("Data received!\n");
         radio_data_ready = true;
         status |= NRF24_REG_STATUS_MASK_RX_DR;
     }
 
     if(status & NRF24_REG_STATUS_MASK_MAX_RT)
     {
-        printf("Max retries reached!\n");
         tx_max_retries_reached = true;
         status |= NRF24_REG_STATUS_MASK_MAX_RT;
     }
@@ -251,26 +246,7 @@ enum radio_operation_result_t radio_send(struct radio_t *radio, uint8_t *data, u
 
     HAL_Delay(10);
 
-    res = nrf24_get_status(radio->nrf_radio, &config);
-    if(res != HAL_OK)
-    {
-        printf("Error getting status: %d\n", res);
-        return RADIO_ERROR;
-    }
-    printf("Status: %d\n", config);
-
     nrf24_ce_on(radio->nrf_radio);
-
-    printf("ce on...\n");
-
-    res = nrf24_get_config(radio->nrf_radio, &config);
-    if(res != HAL_OK)
-    {
-        printf("Error getting config: %d\n", res);
-        return RADIO_ERROR;
-    }
-
-    printf("config: %d\n", config);
 
     start_time = HAL_GetTick();
 
@@ -285,22 +261,6 @@ enum radio_operation_result_t radio_send(struct radio_t *radio, uint8_t *data, u
 
         if((HAL_GetTick() - start_time) % 5000 == 0)
         {
-            res = nrf24_get_observe_tx(radio->nrf_radio, &config);
-            if(res != HAL_OK)
-            {
-                printf("Error getting observe TX: %d\n", res);
-                return RADIO_ERROR;
-            }
-            printf("Retransmissions: %d\n", config);
-
-            res = nrf24_get_status(radio->nrf_radio, &config);
-            if(res != HAL_OK)
-            {
-                printf("Error getting status: %d\n", res);
-                return RADIO_ERROR;
-            }
-            printf("Status: %d\n", config);
-
             printf("No ACK received in 5 seconds, retrying...\n");
         }
     }
