@@ -277,7 +277,7 @@ enum radio_operation_result_t radio_send(struct radio_t *radio, uint8_t *data, u
             goto radio_send_revert_to_rx;
         }
 
-        if((HAL_GetTick() - start_time) % 5000 == 0)
+        if((HAL_GetTick() - start_time) % 5000 == 4999)
         {
             printf("No ACK received in 5 seconds, retrying...\n");
         }
