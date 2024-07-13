@@ -72,7 +72,7 @@ struct nrf24_t nrf_radio = {
 
 struct radio_t radio = {
   .address_width = NRF24_AW_5_BYTES,
-  .channel = 20,
+  .channel = 36,
   .data_rate = NRF24_ADR_1_MBPS,
   .data_width = 32,
   .is_in_rx_mode = true,
@@ -139,6 +139,8 @@ int main(void)
   HAL_Delay(1000);
   retarget_init(&huart2);
   printf("Basic setup done!\n");
+  printf("Waiting for 10 seconds...\n");
+  HAL_Delay(10000);
   /* USER CODE END 2 */
 
   /* Infinite loop */
