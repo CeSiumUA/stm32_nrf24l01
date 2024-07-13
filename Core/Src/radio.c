@@ -19,7 +19,6 @@ enum radio_operation_result_t radio_process_irq(struct radio_t *radio)
     uint8_t pipe;
 
     hal_status = nrf24_get_status(radio->nrf_radio, &status);
-
     if(hal_status != HAL_OK)
     {
         printf("Error getting status: %d\n", hal_status);
@@ -28,21 +27,18 @@ enum radio_operation_result_t radio_process_irq(struct radio_t *radio)
 
     if(status & NRF24_REG_STATUS_MASK_TX_DS)
     {
-        printf("Data sent, ACK received!\n");
         tx_ack_received = true;
         status |= NRF24_REG_STATUS_MASK_TX_DS;
     }
 
     if(status & NRF24_REG_STATUS_MASK_RX_DR)
     {
-        printf("Data received!\n");
         radio_data_ready = true;
         status |= NRF24_REG_STATUS_MASK_RX_DR;
     }
 
     if(status & NRF24_REG_STATUS_MASK_MAX_RT)
     {
-        printf("Max retries reached!\n");
         tx_max_retries_reached = true;
         status |= NRF24_REG_STATUS_MASK_MAX_RT;
     }
@@ -194,28 +190,26 @@ enum radio_operation_result_t radio_receive(struct radio_t *radio, uint8_t *data
     return RADIO_OK;
 }
 
-enum radio_operation_result_t radio_send(struct radio_t *radio, uint8_t *data)
+enum radio_operation_result_t radio_send(struct radio_t *radio, uint8_t *data, uint8_t len)
 {
     nrf24_hal_status_t res;
     uint32_t start_time;
+    uint8_t config;
     enum radio_operation_result_t radio_res = RADIO_OK;
 
-    if(radio_data_ready || radio->is_in_rx_mode)
+    if(radio_data_ready && radio->is_in_rx_mode)
     {
         return RADIO_RETRY;
     }
 
     nrf24_ce_off(radio->nrf_radio);
 
+    printf("ce off...\n");
+
     tx_max_retries_reached = false;
     tx_ack_received = false;
 
-    res = nrf24_flush_tx_fifo(radio->nrf_radio);
-    if(res != HAL_OK)
-    {
-        printf("Error flushing TX FIFO: %d\n", res);
-        return RADIO_ERROR;
-    }
+    HAL_Delay(10);
 
     res = nrf24_set_ptx_mode(radio->nrf_radio);
     if(res != HAL_OK)
@@ -224,12 +218,51 @@ enum radio_operation_result_t radio_send(struct radio_t *radio, uint8_t *data)
         return RADIO_ERROR;
     }
 
-    res = nrf24_write_tx_fifo(radio->nrf_radio, data, radio->data_width);
+    printf("PTX mode set...\n");
+
+    HAL_Delay(10);
+
+    res = nrf24_flush_tx_fifo(radio->nrf_radio);
+    if(res != HAL_OK)
+    {
+        printf("Error flushing TX FIFO: %d\n", res);
+        return RADIO_ERROR;
+    }
+
+    printf("TX FIFO flushed...\n");
+
+    HAL_Delay(10);
+
+    printf("writing TX payload (%u bytes)...\n", len);
+
+    res = nrf24_write_tx_fifo(radio->nrf_radio, data, len);
     if(res != HAL_OK)
     {
         printf("Error writing TX payload: %d\n", res);
         return RADIO_ERROR;
     }
+
+    printf("TX payload written...\n");
+
+    HAL_Delay(10);
+
+    res = nrf24_get_status(radio->nrf_radio, &config);
+    if(res != HAL_OK)
+    {
+        printf("Error getting status: %d\n", res);
+        return RADIO_ERROR;
+    }
+
+    printf("status: %x\n", config);
+
+    res = nrf24_get_fifo_status(radio->nrf_radio, &config);
+    if(res != HAL_OK)
+    {
+        printf("Error getting FIFO status: %d\n", res);
+        return RADIO_ERROR;
+    }
+
+    printf("fifo status: %x\n", config);
 
     nrf24_ce_on(radio->nrf_radio);
 
@@ -252,8 +285,18 @@ enum radio_operation_result_t radio_send(struct radio_t *radio, uint8_t *data)
 
     printf("Data sent, ACK received!\n");
 
+    HAL_Delay(10);
+
 radio_send_revert_to_rx:
     nrf24_ce_off(radio->nrf_radio);
+
+    uint8_t rx_pipe_0_addr[5] = {0xE7, 0xE7, 0xE7, 0xE7, 0xE7};
+    res = nrf24_set_pipe_address(radio->nrf_radio, 0, rx_pipe_0_addr);
+    if(res != HAL_OK)
+    {
+        printf("Error setting RX pipe 0 address: %d\n", res);
+        return RADIO_ERROR;
+    }
 
     res = nrf24_set_prx_mode(radio->nrf_radio);
     if(res != HAL_OK)
@@ -262,7 +305,18 @@ radio_send_revert_to_rx:
         return RADIO_ERROR;
     }
 
+    res = nrf24_flush_rx_fifo(radio->nrf_radio);
+    if(res != HAL_OK)
+    {
+        printf("Error flushing RX FIFO: %d\n", res);
+        return RADIO_ERROR;
+    }
+    
+    HAL_Delay(10);
+
     nrf24_ce_on(radio->nrf_radio);
+
+    printf("Reverted to PRX mode...\n");
 
     return radio_res;
 }
