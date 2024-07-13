@@ -72,7 +72,7 @@ struct nrf24_t nrf_radio = {
 
 struct radio_t radio = {
   .address_width = NRF24_AW_5_BYTES,
-  .channel = 2,
+  .channel = 36,
   .data_rate = NRF24_ADR_1_MBPS,
   .data_width = 32,
   .is_in_rx_mode = true,
@@ -139,6 +139,8 @@ int main(void)
   HAL_Delay(1000);
   retarget_init(&huart2);
   printf("Basic setup done!\n");
+  printf("Waiting for 10 seconds...\n");
+  HAL_Delay(10000);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -146,6 +148,9 @@ int main(void)
 
   printf("Starting radio...!\n");
   radio_status = radio_init(&radio);
+  if(radio_status != RADIO_OK){
+    printf("Error initializing radio\n");
+  }
 
   printf("Starting timer...!\n");
   status = HAL_TIM_Base_Start(&htim3);
@@ -165,13 +170,16 @@ int main(void)
     printf("Error starting sending timer\n");
   }
   
+  char buffer[32] = {0};
+
   while (1)
   {
     temperature_process_adc_data(adc_data);
     if(time_to_send_data){
       temperature = temperature_get_temperature();
       printf("Temperature: %.2f\n", temperature);
-      radio_status = radio_send(&radio, (uint8_t *)&temperature);
+      sprintf(buffer, "%.2f\n", temperature);
+      radio_status = radio_send(&radio, (uint8_t *)buffer, 32);
       if(radio_status == RADIO_OK){
         printf("Data sent successfully\n");
         time_to_send_data = false;
@@ -181,6 +189,7 @@ int main(void)
       }
       else{
         printf("Error sending data\n");
+        time_to_send_data = false;
       }
     }
 
@@ -189,10 +198,7 @@ int main(void)
       printf("Received data: %s\n", radio_receive_buffer);
       time_to_send_data = true;
     }
-    else if(radio_status == RADIO_RETRY){
-      printf("Radio has no data to receive, retrying\n");
-    }
-    else{
+    else if(radio_status == RADIO_ERROR){
       printf("Error receiving data\n");
     }
     /* USER CODE END WHILE */

@@ -223,7 +223,8 @@ void ADC_IRQHandler(void)
 void EXTI9_5_IRQHandler(void)
 {
   /* USER CODE BEGIN EXTI9_5_IRQn 0 */
-
+  //FIXME not a good idea to make such operations in IRQ context
+  radio_process_irq(&radio);
   /* USER CODE END EXTI9_5_IRQn 0 */
   HAL_GPIO_EXTI_IRQHandler(RADIO_1_IRQ_Pin);
   /* USER CODE BEGIN EXTI9_5_IRQn 1 */
@@ -237,8 +238,7 @@ void EXTI9_5_IRQHandler(void)
 void TIM4_IRQHandler(void)
 {
   /* USER CODE BEGIN TIM4_IRQn 0 */
-  irq4_acc++;
-  if(irq4_acc % 10 == 0)
+  if((++irq4_acc) % 10 == 0)
   {
     time_to_send_data = true;
     irq4_acc = 0;
@@ -256,8 +256,6 @@ void TIM4_IRQHandler(void)
 void EXTI15_10_IRQHandler(void)
 {
   /* USER CODE BEGIN EXTI15_10_IRQn 0 */
-  //FIXME not a good idea to make such operations in IRQ context
-  radio_process_irq(&radio);
   /* USER CODE END EXTI15_10_IRQn 0 */
   HAL_GPIO_EXTI_IRQHandler(B1_Pin);
   /* USER CODE BEGIN EXTI15_10_IRQn 1 */
